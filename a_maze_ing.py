@@ -1,4 +1,4 @@
-from src.get_config import get_config
+from src.parser import get_config
 import random
 import sys
 
@@ -15,7 +15,7 @@ def print_maze(maze: list) -> None:
 
 def main() -> None:
 
-    config = get_config("config.txt")
+    config = get_config(sys.argv[1])
     parser_wid = int(config.get("WIDTH"))
     parser_hei = int(config.get("HEIGHT"))
     output_file = config["OUTPUT_FILE"]
@@ -46,6 +46,7 @@ def main() -> None:
         print(F"Error: {err}")
 
     print_maze(maze)
+    print(type(sys.argv))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,10 @@
 from typing import Any
 from abc import ABC, abstractmethod
+from sys import exit
+
+GREEN = "\33[32m"
+RED = "\33[31m"
+NC = "\33[0m"
 
 
 class Processor(ABC):
@@ -10,68 +15,75 @@ class Processor(ABC):
 
 class NumericProcessor(Processor):
     def converter(self, value: str) -> int:
-        return int(value)
+        new_value = int(value)
+        if new_value < 0:
+            raise ValueError("No negative input!")
+        return new_value
 
 
 class TextProcessor(Processor):
     def converter(self, value: str) -> str:
-        if isinstance(value,  str):
-            return value
+        if not isinstance(value,  str) or len(value) == 0:
+            raise ValueError("No empty input!")
+        return value
 
 
-class CordenateProcessor(Processor):
+class CoordenateProcessor(Processor):
     def converter(self, value: str) -> tuple[int, int]:
-        try:
-            if "," in value:
-                a, b = value.split(",", 1)
-                new_value = (int(a), int(b))
-                return new_value
-        except Exception:
-            raise
+        if "," not in value:
+            raise ValueError("Invalid coordinate")
+        x, y = value.split(",", 1)
+        new_value = (int(x), int(y))
+        return new_value
 
 
 class ConditionProcessor(Processor):
     def converter(self, value: str) -> bool:
         if value.lower() == "true":
             return True
-        else:
+        elif value.lower() == "false":
             return False
+        raise ValueError("Invalid parameter")
 
 
 def parser(args: list[str]) -> dict:
-    processors = [NumericProcessor(),
-                  CordenateProcessor(),
-                  ConditionProcessor(),
-                  TextProcessor()]
+    validators: dict[str, Processor] = {
+            "WIDTH": NumericProcessor(),
+            "HEIGHT": NumericProcessor(),
+            "ENTRY": CoordenateProcessor(),
+            "EXIT": CoordenateProcessor(),
+            "OUTPUT_FILE": TextProcessor(),
+            "PERFECT": ConditionProcessor()}
 
     if len(args) != 2:
-        raise ValueError(f"Error: Expecting two arguments, given: {len(args)}")
+        raise ValueError(f"Error: Expected 2 arguments, given: {len(args)}")
 
     file_name = args[1]
-    config: dict = {}
     try:
         with open(file_name, "r") as file:
+            config: dict[str, Any] = {}
+
             for line in file:
                 line = line.strip()
-
-                if not line or "=" not in line:
+                if not line or "=" not in line or line.startswith("#"):
                     continue
 
                 key, value = line.split("=", 1)
                 key = key.strip()
                 value = value.strip()
+                if key not in validators.keys():
+                    raise KeyError(f"Unknow key: {key}")
+                config[key] = validators[key].converter(value)
 
-                for process in processors:
-                    try:
-                        config[key] = process.converter(value)
-                        break
-                    except Exception:
-                        continue
+            for k in validators.keys():
+                if k not in config.keys():
+                    raise KeyError(f"Missing parameter: {k}")
+            if config['ENTRY'] == config['EXIT']:
+                raise ValueError("Entry and Exit must be different")
+            if config["WIDTH"] < 2 and config["HEIGHT"] < 2:
+                raise ValueError("Maze dimensions must be at least 2x1")
 
         return config
-    except FileNotFoundError:
-        raise
-    except PermissionError:
-        raise
-    except Exception:
-        raise
+    except Exception as err:
+        print(RED, err, NC)
+        exit()

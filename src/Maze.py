@@ -15,6 +15,7 @@ class Maze:
         self.height = self.__validate(height)
         self.width = self.__validate(width)
 
+    @staticmethod
     def __validate(value: int) -> int:
         if value < 0 or not isinstance(value, int):
             return 0

@@ -1,6 +1,10 @@
-WIDTH=31
-HEIGHT=21
+WIDTH=20
+HEIGHT=15
 ENTRY=0,0
 EXIT=19,14
-OUTPUT_FILE=output_maze.txt
+OUTPUT_FILE=maze.txt
 PERFECT=True
+
+# Negative input
+# Entry same Exit
+# Dimensions must be at least 2x1

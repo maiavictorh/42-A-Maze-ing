@@ -1,6 +1,6 @@
-from typing import Any
 from abc import ABC, abstractmethod
 from sys import exit
+from typing import Any
 
 GREEN = "\33[32m"
 RED = "\33[31m"
@@ -12,13 +12,17 @@ class Processor(ABC):
     def converter(self, value: str) -> Any:
         pass
 
-
-class NumericProcessor(Processor):
-    def converter(self, value: str) -> int:
+    @staticmethod
+    def validate_int(value: str) -> int:
         new_value = int(value)
         if new_value < 0:
             raise ValueError("No negative input!")
         return new_value
+
+
+class NumericProcessor(Processor):
+    def converter(self, value: str) -> int:
+        return self.validate_int(value)
 
 
 class TextProcessor(Processor):
@@ -33,8 +37,7 @@ class CoordenateProcessor(Processor):
         if "," not in value:
             raise ValueError("Invalid coordinate")
         x, y = value.split(",", 1)
-        new_value = (int(x), int(y))
-        return new_value
+        return (self.validate_int(x), self.validate_int(y))
 
 
 class ConditionProcessor(Processor):
@@ -43,7 +46,7 @@ class ConditionProcessor(Processor):
             return True
         elif value.lower() == "false":
             return False
-        raise ValueError("Invalid parameter")
+        raise ValueError("Invalid configuration")
 
 
 def parser(args: list[str]) -> dict:
@@ -80,10 +83,11 @@ def parser(args: list[str]) -> dict:
                     raise KeyError(f"Missing parameter: {k}")
             if config['ENTRY'] == config['EXIT']:
                 raise ValueError("Entry and Exit must be different")
-            if config["WIDTH"] < 2 and config["HEIGHT"] < 2:
-                raise ValueError("Maze dimensions must be at least 2x1")
+            if config['WIDTH'] < 1 or config['HEIGHT'] < 1 \
+                    or config["WIDTH"] < 2 and config["HEIGHT"] < 2:
+                raise ValueError("Maze dimensions must be at least 2x1 or 1x2")
 
         return config
-    except Exception as err:
+    except (ValueError, KeyError, FileNotFoundError) as err:
         print(RED, err, NC)
         exit()

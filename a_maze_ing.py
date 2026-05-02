@@ -1,4 +1,4 @@
-from src.parser import parser, RED, NC
+from src import parser, RED, NC
 import sys
 
 
@@ -8,7 +8,6 @@ def main() -> None:
         print(config)
     except Exception as err:
         print(RED, err, NC)
-        sys.exit
 
 
 if __name__ == "__main__":

@@ -32,12 +32,12 @@ class TextProcessor(Processor):
         return value
 
 
-class CoordenateProcessor(Processor):
+class CoordinateProcessor(Processor):
     def converter(self, value: str) -> tuple[int, int]:
         if "," not in value:
             raise ValueError("Invalid coordinate")
         x, y = value.split(",", 1)
-        return (self.validate_int(x), self.validate_int(y))
+        return self.validate_int(x), self.validate_int(y)
 
 
 class ConditionProcessor(Processor):
@@ -53,8 +53,8 @@ def parser(args: list[str]) -> dict:
     validators: dict[str, Processor] = {
             "WIDTH": NumericProcessor(),
             "HEIGHT": NumericProcessor(),
-            "ENTRY": CoordenateProcessor(),
-            "EXIT": CoordenateProcessor(),
+            "ENTRY": CoordinateProcessor(),
+            "EXIT": CoordinateProcessor(),
             "OUTPUT_FILE": TextProcessor(),
             "PERFECT": ConditionProcessor()}
 

@@ -1,52 +1,28 @@
-from abc import ABC, abstractmethod
-from sys import exit
+from .Utils import Processor, NumericProcessor, CoordinateProcessor, \
+                    TextProcessor, ConditionProcessor
+from .Utils import MazeError, CoordinateError
 from typing import Any
 
-GREEN = "\33[32m"
-RED = "\33[31m"
-NC = "\33[0m"
 
+def validate_parser(validators: dict[str, Processor],
+                    config: dict[str, Any]) -> None:
+    for k in validators:
+        if k not in config:
+            raise KeyError(f"Missing parameter: {k}")
 
-class Processor(ABC):
-    @abstractmethod
-    def converter(self, value: str) -> Any:
-        pass
+    if config['WIDTH'] < 1 or config['HEIGHT'] < 1 \
+            or config["WIDTH"] < 2 and config["HEIGHT"] < 2:
+        raise MazeError("Maze dimensions must be at least 2x1 or 1x2")
 
-    @staticmethod
-    def validate_int(value: str) -> int:
-        new_value = int(value)
-        if new_value < 0:
-            raise ValueError("No negative input!")
-        return new_value
+    if config['ENTRY'] == config['EXIT']:
+        raise CoordinateError("Entry and Exit must be different")
 
-
-class NumericProcessor(Processor):
-    def converter(self, value: str) -> int:
-        return self.validate_int(value)
-
-
-class TextProcessor(Processor):
-    def converter(self, value: str) -> str:
-        if not isinstance(value,  str) or len(value) == 0:
-            raise ValueError("No empty input!")
-        return value
-
-
-class CoordinateProcessor(Processor):
-    def converter(self, value: str) -> tuple[int, int]:
-        if "," not in value:
-            raise ValueError("Invalid coordinate")
-        x, y = value.split(",", 1)
-        return self.validate_int(x), self.validate_int(y)
-
-
-class ConditionProcessor(Processor):
-    def converter(self, value: str) -> bool:
-        if value.lower() == "true":
-            return True
-        elif value.lower() == "false":
-            return False
-        raise ValueError("Invalid configuration")
+    entry_x, entry_y = config["ENTRY"]
+    exit_x, exit_y = config["EXIT"]
+    if entry_x > config["WIDTH"] or entry_y > config["HEIGHT"]:
+        raise CoordinateError("Entry must be inside the Maze")
+    if exit_x > config["WIDTH"] or exit_y > config["HEIGHT"]:
+        raise CoordinateError("Exit must be inside the Maze")
 
 
 def parser(args: list[str]) -> dict:
@@ -56,38 +32,27 @@ def parser(args: list[str]) -> dict:
             "ENTRY": CoordinateProcessor(),
             "EXIT": CoordinateProcessor(),
             "OUTPUT_FILE": TextProcessor(),
-            "PERFECT": ConditionProcessor()}
-
-    if len(args) != 2:
-        raise ValueError(f"Error: Expected 2 arguments, given: {len(args)}")
+            "PERFECT": ConditionProcessor()
+            }
 
     file_name = args[1]
-    try:
-        with open(file_name, "r") as file:
-            config: dict[str, Any] = {}
+    with open(file_name, "r") as file:
+        config: dict[str, Any] = {}
 
-            for line in file:
-                line = line.strip()
-                if not line or "=" not in line or line.startswith("#"):
-                    continue
+        for line in file:
+            line = line.strip()
+            if not line or "=" not in line or line.startswith("#"):
+                continue
 
-                key, value = line.split("=", 1)
-                key = key.strip()
-                value = value.strip()
-                if key not in validators.keys():
-                    raise KeyError(f"Unknow key: {key}")
-                config[key] = validators[key].converter(value)
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+            if key not in validators:
+                raise KeyError(f"Unknown key: {key}")
+            if key in config:
+                raise KeyError("No duplicated keys allowed")
+            config[key] = validators[key].converter(value)
 
-            for k in validators.keys():
-                if k not in config.keys():
-                    raise KeyError(f"Missing parameter: {k}")
-            if config['ENTRY'] == config['EXIT']:
-                raise ValueError("Entry and Exit must be different")
-            if config['WIDTH'] < 1 or config['HEIGHT'] < 1 \
-                    or config["WIDTH"] < 2 and config["HEIGHT"] < 2:
-                raise ValueError("Maze dimensions must be at least 2x1 or 1x2")
+        validate_parser(validators, config)
 
-        return config
-    except (ValueError, KeyError, FileNotFoundError) as err:
-        print(RED, err, NC)
-        exit()
+    return config

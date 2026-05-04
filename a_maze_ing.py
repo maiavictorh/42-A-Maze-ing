@@ -1,14 +1,16 @@
-from src import parser, RED, NC
-import sys
-
-
-def main() -> None:
-    try:
-        config = parser(sys.argv)
-        print(config)
-    except Exception as err:
-        print(RED, err, NC)
+from src import parser, RED, NC, CoordinateError, MazeError
+from sys import argv, exit
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        if len(argv) != 2:
+            raise ValueError(f"Expected 2 arguments, given: {len(argv)}")
+
+        config = parser(argv)
+        print(config)  # TEST
+
+    except (ValueError, KeyError, CoordinateError, MazeError,
+            FileNotFoundError, PermissionError) as err:
+        print(f"{RED}Error: {err}\n  Aborting...  {NC}")
+        exit()

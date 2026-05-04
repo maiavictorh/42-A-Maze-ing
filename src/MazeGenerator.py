@@ -2,7 +2,7 @@ from src.Cell import Cell
 import random
 
 
-class Maze:
+class MazeGenerator:
 
     DIRS = {
         Cell.N: (-1, 0),

@@ -1,4 +1,4 @@
-from src.parser import get_config
+from src.parser import parser
 import random
 import sys
 
@@ -15,9 +15,9 @@ def print_maze(maze: list) -> None:
 
 def main() -> None:
 
-    config = get_config(sys.argv[1])
-    parser_wid = int(config.get("WIDTH"))
-    parser_hei = int(config.get("HEIGHT"))
+    config = parser(sys.argv)
+    parser_wid = config.get("WIDTH")
+    parser_hei = config.get("HEIGHT")
     output_file = config["OUTPUT_FILE"]
     width = parser_wid
     height = parser_hei
@@ -39,7 +39,7 @@ def main() -> None:
 
     draw_maze(1, 1)
     try:
-        with open(output_file, "w") as file:
+        with open("maze.txt", "w") as file:
             for line in maze:
                 file.write(f"{''.join(line)}\n")
     except Exception as err:

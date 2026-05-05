@@ -39,14 +39,13 @@ def main() -> None:
 
     draw_maze(1, 1)
     try:
-        with open("maze.txt", "w") as file:
+        with open(output_file, "w") as file:
             for line in maze:
                 file.write(f"{''.join(line)}\n")
     except Exception as err:
         print(F"Error: {err}")
 
     print_maze(maze)
-    print(type(sys.argv))
 
 
 if __name__ == "__main__":

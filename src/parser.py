@@ -10,9 +10,8 @@ def validate_parser(validators: dict[str, Processor],
         if k not in config:
             raise KeyError(f"Missing parameter: {k}")
 
-    if config['WIDTH'] < 1 or config['HEIGHT'] < 1 \
-            or config["WIDTH"] < 2 and config["HEIGHT"] < 2:
-        raise MazeError("Maze dimensions must be at least 2x1 or 1x2")
+    if config['WIDTH'] < 5 or config['HEIGHT'] < 5:
+        raise MazeError("Maze is too small, mininum: 5x5")
 
     if config['ENTRY'] == config['EXIT']:
         raise CoordinateError("Entry and Exit must be different")
@@ -50,7 +49,7 @@ def parser(args: list[str]) -> dict:
             if key not in validators:
                 raise KeyError(f"Unknown key: {key}")
             if key in config:
-                raise KeyError("No duplicated keys allowed")
+                raise KeyError("No duplicated config allowed")
             config[key] = validators[key].converter(value)
 
         validate_parser(validators, config)

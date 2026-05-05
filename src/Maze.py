@@ -1,10 +1,10 @@
-from src.Cell import Cell
+from .Cell import Cell
 import random
 
 
 class Maze:
 
-    DIRS = {
+    DIRECTIONS = {
         Cell.N: (-1, 0),
         Cell.S: (1, 0),
         Cell.E: (0, 1),

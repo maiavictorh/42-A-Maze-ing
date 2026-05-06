@@ -1,33 +1,80 @@
-from src.parser import parser
-from src.Cell import Cell
+from parser import parser
+from Cell import Cell
 import random
 import sys
 
-DIRS = {
-        Cell.N: (-1, 0),
-        Cell.S: (1, 0),
-        Cell.E: (0, 1),
-        Cell.W: (0, -1)
-    }
 
-class MazeGenerator:
-    def __init__(self, width: int, height: int) -> None:
+Grid = list[list[Cell]]
+
+
+def display_hex_grid(grid: Grid) -> None:
+    for row in grid:
+        for cell in row:
+            print(f"{cell.convert_walls()}", end="")
+        print()
+
+
+class Maze:
+    def __init__(self, width: int, height: int, seed: int):
         self.width = width
         self.height = height
+        self.seed = seed
+
+    def grid(self) -> Grid:
+        grid = [[Cell() for _ in range(self.width)]
+                for _ in range(self.height)]
+        return grid
+
+    def draw_maze(self, x, y, grid: Grid):
+        grid[y][x].visited = True
+
+        moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+        random.shuffle(moves)
+
+        for dx, dy in moves:
+            nx, ny = x + dx, y + dy
+
+            if nx >= 0 and nx < self.width and ny >= 0 and ny < self.height:
+                if not grid[ny][nx].visited:
+
+                    direction = Cell.convert_direction((dx, dy))
+                    opposite = Cell.convert_direction((-dx, -dy))
+
+                    grid[y][x].walls &= ~direction
+                    grid[ny][nx].walls &= ~opposite
+
+                    self.draw_maze(nx, ny, grid)
 
 
-    def gen_maze(self) -> list[list[Cell]]:
-        gride = [[Cell() for _ in range(self.width)]
-                 for _ in range(self.height)]
+def print_maze(maze: Grid) -> None:
+    h = len(maze)
+    w = len(maze[0])
+    WHITE = "\033[47;30m"
+    NC = "\033[0m"
 
-        def draw(r, c):
-            gride[r][c].visited = True
+    print(f"{WHITE} {NC}" + f"{WHITE}    {NC}" * w)
 
-            directions = list(MazeGenerator.DIRS.keys())
-            random.shuffle(directions)
+    for y in range(h):
+        line = f"{WHITE} {NC}"
+        bottom = f"{WHITE} {NC}"
 
-            for d in directions:
-                dx, dy = MazeGenerator.DIRS[d]
+        for x in range(w):
+            cell = maze[y][x]
+
+            line += "   "
+
+            if cell.walls & Cell.E:
+                line += f"{WHITE} {NC}"
+            else:
+                line += " "
+
+            if cell.walls & Cell.S:
+                bottom += f"{WHITE}    {NC}"
+            else:
+                bottom += f"   {WHITE} {NC}"
+
+        print(line)
+        print(bottom)
 
 
 def test() -> None:
@@ -35,4 +82,13 @@ def test() -> None:
     width = config["WIDTH"]
     height = config["HEIGHT"]
 
-    maze = MazeGenerator(width, height)
+    maze = Maze(width, height, 0)
+    grid = maze.grid()
+    maze.draw_maze(0, 0, grid)
+    display_hex_grid(grid)
+    print()
+    print_maze(grid)
+
+
+if __name__ == "__main__":
+    test()

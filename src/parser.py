@@ -1,7 +1,8 @@
-from .Utils import Processor, NumericProcessor, CoordinateProcessor, \
-                    TextProcessor, ConditionProcessor
-from .Utils import MazeError, CoordinateError
 from typing import Any
+from utils.Processor import Processor
+from utils import MazeError, CoordinateError
+from utils import NumericProcessor, CoordinateProcessor, \
+                    TextProcessor, ConditionProcessor
 
 
 def validate_parser(validators: dict[str, Processor],

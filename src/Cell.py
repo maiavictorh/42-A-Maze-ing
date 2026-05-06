@@ -1,37 +1,55 @@
 class Cell:
-    N = 1  # -> 1110
-    E = 2  # -> 1101
-    S = 4  # -> 1011
-    W = 8  # -> 0111
+    """
+    A Cell is like a block with four walls (N, E, S, W), which is
+    represented as a nibble (four bits). If the wall is closed, the bit is set
+    to '1', if it's open, the bit is set to '0', meaning there is a path
+    in that direction. The North is set to the LSB (Less Significant Bit).
+
+    The cell starts with all walls closed (1111), which is 15 in
+    decimal.
+
+    The main idea is to set the North to 1 (0001), and use the bitwise
+    operation: walls &= ~N.
+    ex:
+        walls = 15 = 1111
+        N     =  1 = 0001
+       ~N     = ~1 = 1110
+        & 15  & ~1 = 1110
+
+    Now the wall's value is 14, or E in hexa.
+    """
+    N = 1  # -> ~1110
+    E = 2  # -> ~1101
+    S = 4  # -> ~1011
+    W = 8  # -> ~0111
 
     def __init__(self) -> None:
         self.walls = 15
-        self.visited = False
 
     def convert_walls(self) -> str:
         return "0123456789ABCDEF"[self.walls]
 
-    @staticmethod
-    def convert_direction(cord: tuple[int, int]) -> int:
-        """
-        Return the directin of the given coordenate.
 
-        """
-        if cord == (-1, 0):
-            return Cell.N
-        if cord == (0, 1):
-            return Cell.E
-        if cord == (1, 0):
-            return Cell.S
-        if cord == (0, -1):
-            return Cell.W
-        raise ValueError("Cell Error: Invalid Coordenate")
-
-
-def check_directions(grid: list[list[Cell]]):
+def convert_direction(cord: tuple[int, int]) -> int:
     """
-    Verifies all the cells in the grid.
-    Checks all the possible directions in a Cell (N, E, S, W).
+        Return the direction of the given coordenate.
+
+        """
+    if cord == (-1, 0):
+        return Cell.N
+    if cord == (0, 1):
+        return Cell.E
+    if cord == (1, 0):
+        return Cell.S
+    if cord == (0, -1):
+        return Cell.W
+    raise ValueError("Invalid Coordenate")
+
+
+def check_walls(grid: list[list[Cell]]):
+    """
+    Check all the cells in the grid.
+
     """
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]  # N, E, S, W
     rows, cols = len(grid), len(grid[0])
@@ -64,8 +82,9 @@ def main() -> None:
     grid = [[Cell() for _ in range(x)] for _ in range(y)]
     grid[2][2].visited = True
     grid[0][0].visited = True
+    grid[2][0].visited = True
 
-    check_directions(grid)
+    check_walls(grid)
     display_grid(grid)
 
 

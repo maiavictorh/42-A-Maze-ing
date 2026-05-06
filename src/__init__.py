@@ -1,6 +1,5 @@
 from .parser import parser
-from .Utils import CoordinateError, MazeError, GREEN, RED, NC
+from .MazeGenerator import MazeGenerator
 
-__errors__ = [CoordinateError, MazeError]
+__generator__ = [MazeGenerator]
 __functions__ = [parser]
-__colors__ = [GREEN, RED, NC]

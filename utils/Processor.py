@@ -1,18 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-GREEN = "\33[32m"
-RED = "\33[31m"
-NC = "\33[0m"
-
-
-class MazeError(Exception):
-    pass
-
-
-class CoordinateError(MazeError):
-    pass
-
 
 class Processor(ABC):
     @abstractmethod

@@ -19,9 +19,9 @@ def validate_parser(validators: dict[str, Processor],
 
     entry_x, entry_y = config["ENTRY"]
     exit_x, exit_y = config["EXIT"]
-    if entry_x > config["WIDTH"] or entry_y > config["HEIGHT"]:
+    if entry_x >= config["WIDTH"] or entry_y >= config["HEIGHT"]:
         raise CoordinateError("Entry must be inside the Maze")
-    if exit_x > config["WIDTH"] or exit_y > config["HEIGHT"]:
+    if exit_x >= config["WIDTH"] or exit_y >= config["HEIGHT"]:
         raise CoordinateError("Exit must be inside the Maze")
 
 

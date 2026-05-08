@@ -25,6 +25,7 @@ class Cell:
 
     def __init__(self) -> None:
         self.walls = 15
+        self.visited = False  # TEST
 
     def convert_walls(self) -> str:
         return "0123456789ABCDEF"[self.walls]
@@ -43,7 +44,7 @@ def convert_direction(cord: tuple[int, int]) -> int:
         return Cell.S
     if cord == (0, -1):
         return Cell.W
-    raise ValueError("Invalid Coordenate")
+    raise ValueError("Invalid Coordinate")
 
 
 def check_walls(grid: list[list[Cell]]):
@@ -61,10 +62,10 @@ def check_walls(grid: list[list[Cell]]):
 
                 if 0 <= nx < rows and 0 <= ny < cols:
                     if grid[nx][ny].visited:
-                        direction = cell.convert_direction((dx, dy))
+                        direction = convert_direction((dx, dy))
                         cell.walls &= ~direction
 
-                        opposite = cell.convert_direction((-dx, -dy))
+                        opposite = convert_direction((-dx, -dy))
                         grid[nx][ny].walls &= ~ opposite
 
 
@@ -80,7 +81,7 @@ def display_grid(grid: list[list[Cell]]) -> None:
 def main() -> None:
     x, y = 5, 5
     grid = [[Cell() for _ in range(x)] for _ in range(y)]
-    grid[2][2].visited = True
+    # grid[2][2].visited = True
     grid[0][0].visited = True
     grid[2][0].visited = True
 

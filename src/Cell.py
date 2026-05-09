@@ -19,6 +19,7 @@ class Cell:
     E = 2  # -> ~1101
     S = 4  # -> ~1011
     W = 8  # -> ~0111
+
     def __init__(self) -> None:
         self.walls = 15
         self.visited = False
@@ -32,15 +33,16 @@ class Cell:
         Return the directin of the given coordenate.
 
         """
-        if cord == (-1, 0):
-            return Cell.N
-        if cord == (0, 1):
-            return Cell.E
-        if cord == (1, 0):
-            return Cell.S
         if cord == (0, -1):
+            return Cell.N
+        if cord == (1, 0):
+            return Cell.E
+        if cord == (0, 1):
+            return Cell.S
+        if cord == (-1, 0):
             return Cell.W
         raise ValueError("Cell Error: Invalid Coordenate")
+
 
 def check_walls(grid: list[list[Cell]]):
     """
@@ -71,6 +73,8 @@ def display_grid(grid: list[list[Cell]]) -> None:
         print()
 
 # TEST
+
+
 def main() -> None:
     x, y = 5, 5
     grid = [[Cell() for _ in range(x)] for _ in range(y)]

@@ -4,7 +4,63 @@ import random
 import sys
 
 
+WHITE = "\033[47;30m"
+NC = "\033[0m"
+DOOR = "\033[45;30m"
 Grid = list[list[Cell]]
+
+
+def draw_maze(grid: Grid, entry: tuple, exit: tuple) -> None:
+    UP_OPEN = f"{WHITE} {NC}   {WHITE} {NC}"
+    UP_CLOSED = f"{WHITE}     {NC}"
+
+    DOWN_OPEN = f"{WHITE} {NC}   {WHITE} {NC}"
+    DOWN_CLOSED = f"{WHITE}     {NC}"
+
+    N, E, S, W = 1, 2, 4, 8
+    ex, ey = entry
+    ty, tx = exit
+
+    for x, row in enumerate(grid):  # Loop principal para todas as linhas
+
+        for cell in row:  # Primeiro loop, print so a parte de cima da celula
+            print(UP_CLOSED if cell.walls & N else UP_OPEN, end="")
+        print()
+
+        for y, cell in enumerate(row):  # Segundo loop, printa o meio da cell
+            MID_CLOSED = f"{WHITE} {NC}   {WHITE} {NC}"
+            MID_OPEN = "     "
+            LEFT_MID_OPEN = f"    {WHITE} {NC}"
+            RIGHT_MID_OPEN = f"{WHITE} {NC}    "
+            DOOR = "\033[45;30m"
+            if (x == ex and y == ey) or (x == tx and y == ty):
+                if x == ex and y == ey:
+                    ex, ey = -1, -1
+                else:
+                    tx, ty = -1, -1
+                    DOOR = "\033[41;30m"
+
+                MID_CLOSED = f"{WHITE} {NC} {DOOR} {NC} {WHITE} {NC}"
+                MID_OPEN = f"  {DOOR} {NC}  "
+                LEFT_MID_OPEN = f"  {DOOR} {NC} {WHITE} {NC}"
+                RIGHT_MID_OPEN = f"{WHITE} {NC} {DOOR} {NC}  "
+
+            left = bool(cell.walls & W)
+            right = bool(cell.walls & E)
+
+            if left and right:
+                print(MID_CLOSED, end="")
+            elif left and not right:
+                print(RIGHT_MID_OPEN, end="")
+            elif not left and right:
+                print(LEFT_MID_OPEN, end="")
+            else:
+                print(MID_OPEN, end="")
+        print()
+
+    for cell in grid[-1]:
+        print(DOWN_CLOSED if cell.walls & S else DOWN_OPEN, end="")
+    print()
 
 
 def display_hex_grid(grid: Grid) -> None:
@@ -25,7 +81,7 @@ class Maze:
                 for _ in range(self.height)]
         return grid
 
-    def draw_maze(self, x, y, grid: Grid):
+    def broke_walls(self, x, y, grid: Grid):
         grid[y][x].visited = True
 
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
@@ -43,51 +99,26 @@ class Maze:
                     grid[y][x].walls &= ~direction
                     grid[ny][nx].walls &= ~opposite
 
-                    self.draw_maze(nx, ny, grid)
+                    self.broke_walls(nx, ny, grid)
 
 
-def print_maze(maze: Grid) -> None:
-    h = len(maze)
-    w = len(maze[0])
-    WHITE = "\033[47;30m"
-    NC = "\033[0m"
-
-    print(f"{WHITE} {NC}" + f"{WHITE}    {NC}" * w)
-
-    for y in range(h):
-        line = f"{WHITE} {NC}"
-        bottom = f"{WHITE} {NC}"
-
-        for x in range(w):
-            cell = maze[y][x]
-
-            line += "   "
-
-            if cell.walls & Cell.E:
-                line += f"{WHITE} {NC}"
-            else:
-                line += " "
-
-            if cell.walls & Cell.S:
-                bottom += f"{WHITE}    {NC}"
-            else:
-                bottom += f"   {WHITE} {NC}"
-
-        print(line)
-        print(bottom)
+def broke_perfect_maze(maze: Grid):
+    pass
 
 
 def test() -> None:
     config = parser(sys.argv)
     width = config["WIDTH"]
     height = config["HEIGHT"]
+    entry = config["ENTRY"]
+    exit = config["EXIT"]
 
     maze = Maze(width, height, 0)
     grid = maze.grid()
-    maze.draw_maze(0, 0, grid)
+    maze.broke_walls(0, 0, grid)
     display_hex_grid(grid)
     print()
-    print_maze(grid)
+    draw_maze(grid, entry, exit)
 
 
 if __name__ == "__main__":

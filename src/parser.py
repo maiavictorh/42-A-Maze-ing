@@ -25,7 +25,7 @@ def validate_parser(validators: dict[str, Processor],
         raise CoordinateError("Exit must be inside the Maze")
 
 
-def parser(args: list[str]) -> dict:
+def parser(args: list[str]) -> dict[str, Processor]:
     validators: dict[str, Processor] = {
             "WIDTH": NumericProcessor(),
             "HEIGHT": NumericProcessor(),

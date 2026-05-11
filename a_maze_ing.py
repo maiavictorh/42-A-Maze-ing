@@ -3,7 +3,7 @@ from utils import MazeError, CoordinateError
 import sys
 
 
-def user_interactions():
+def user_interactions() -> None:
     print("\n=== A-Maze-ing ===")
     options = ["Re-generate a new maze",
                "Show/Hide path from entry to exit",
@@ -16,14 +16,11 @@ def user_interactions():
     choice = int(input("Choice? (1-4): "))
     match choice:
         case 1:
-            # Gererate new maze
-            print("TEST")
+            print("TEST")  # Generate new maze
         case 2:
-            # Show/Hide path from entry to exit
-            print("TEST")
+            print("TEST")  # Show/Hide path from entry to exit
         case 3:
-            # Rotate maze colors
-            print("TEST")
+            print("TEST")  # Rotate maze colors
         case 4:
             print(YELLOW, "Quitting...", NC)
             sys.exit()
@@ -41,6 +38,8 @@ if __name__ == "__main__":
 
         config = parser(sys.argv)
         maze = MazeGenerator(config).generate()
+
+        print("\n", maze.entry)
 
         user_interactions()
 

@@ -14,7 +14,6 @@ class Cell:
         walls = 15 = 1111
         N     =  1 = 0001
        ~N     = ~1 = 1110
-        & 15  & ~1 = 1110
 
     Now the wall's value is 14, or E in hexa.
     """
@@ -33,9 +32,8 @@ class Cell:
 
 def convert_direction(cord: tuple[int, int]) -> int:
     """
-        Return the direction of the given coordenate.
-
-        """
+    Return the direction of the given coordenate.
+    """
     if cord == (-1, 0):
         return Cell.N
     if cord == (0, 1):
@@ -47,10 +45,9 @@ def convert_direction(cord: tuple[int, int]) -> int:
     raise ValueError("Invalid Coordinate")
 
 
-def check_walls(grid: list[list[Cell]]):
+def check_walls(grid: list[list[Cell]]) -> None:
     """
     Check all the cells in the grid.
-
     """
     directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]  # N, E, S, W
     rows, cols = len(grid), len(grid[0])

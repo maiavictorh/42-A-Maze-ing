@@ -32,7 +32,7 @@ class Maze:
     def get_neighbors(self, x: int, y: int) -> list[tuple[int, int, int]]:
         neighbors = []
 
-        for direction, dx, dy in DIRECTIONS.items():
+        for direction, (dx, dy) in DIRECTIONS.items():
             nx = x + dx
             ny = y + dy
 

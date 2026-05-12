@@ -11,7 +11,7 @@ class Processor(ABC):
     def validate_int(value: str) -> int:
         new_value = int(value)
         if new_value < 0:
-            raise ValueError("Config must not be negative")
+            raise ValueError("Config cannot be negative")
         return new_value
 
 

@@ -41,8 +41,10 @@ def parser(args: list[str]) -> dict[str, Processor]:
 
         for line in file:
             line = line.strip()
-            if not line or "=" not in line or line.startswith("#"):
+            if not line or line.startswith("#"):
                 continue
+            elif "=" not in line:
+                raise ValueError("Invalid line")
 
             key, value = line.split("=", 1)
             key = key.strip()

@@ -79,6 +79,47 @@ class Maze:
     def grid(self) -> Grid:
         grid = [[Cell() for _ in range(self.width)]
                 for _ in range(self.height)]
+
+        half_width = int(self.width / 2)
+        half_height = int(self.height / 2)
+
+        four_width = half_width - 2
+        four_height = half_height - 2
+
+        two_width = four_width + 4
+        two_height = four_height
+
+        # mark 4
+        for i in range(2):
+            grid[four_height][four_width].cell42 = True
+            four_height += 1
+        for i in range(2):
+            grid[four_height][four_width].cell42 = True
+            four_width += 1
+        for i in range(2):
+            grid[four_height][four_width].cell42 = True
+            four_height -= 1
+        for i in range(5):
+            grid[four_height][four_width].cell42 = True
+            four_height += 1
+
+        # mark 2
+        for i in range(2):
+            grid[two_height][two_width].cell42 = True
+            two_width += 1
+        for i in range(2):
+            grid[two_height][two_width].cell42 = True
+            two_height += 1
+        for i in range(2):
+            grid[two_height][two_width].cell42 = True
+            two_width -= 1
+        for i in range(2):
+            grid[two_height][two_width].cell42 = True
+            two_height += 1
+        for i in range(3):
+            grid[two_height][two_width].cell42 = True
+            two_width += 1
+
         return grid
 
     def broke_walls(self, x, y, grid: Grid):
@@ -91,7 +132,7 @@ class Maze:
             nx, ny = x + dx, y + dy
 
             if nx >= 0 and nx < self.width and ny >= 0 and ny < self.height:
-                if not grid[ny][nx].visited:
+                if not grid[ny][nx].visited and not grid[ny][nx].cell42:
 
                     direction = Cell.convert_direction((dx, dy))
                     opposite = Cell.convert_direction((-dx, -dy))

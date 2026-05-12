@@ -23,6 +23,7 @@ class Cell:
     def __init__(self) -> None:
         self.walls = 15
         self.visited = False
+        self.cell42 = False
 
     def convert_walls(self) -> str:
         return "0123456789ABCDEF"[self.walls]
@@ -42,48 +43,3 @@ class Cell:
         if cord == (-1, 0):
             return Cell.W
         raise ValueError("Cell Error: Invalid Coordenate")
-
-
-def check_walls(grid: list[list[Cell]]):
-    """
-    Check all the cells in the grid.
-
-    """
-    directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]  # N, E, S, W
-    rows, cols = len(grid), len(grid[0])
-
-    for x, row in enumerate(grid):
-        for y, cell in enumerate(row):
-            for dx, dy in directions:
-                nx, ny = x + dx, y + dy
-
-                if 0 <= nx < rows and 0 <= ny < cols:
-                    if grid[nx][ny].visited:
-                        direction = cell.convert_direction((dx, dy))
-                        cell.walls &= ~direction
-
-                        opposite = cell.convert_direction((-dx, -dy))
-                        grid[nx][ny].walls &= ~ opposite
-
-
-def display_grid(grid: list[list[Cell]]) -> None:
-    for row in grid:
-        for cell in row:
-            print(f"{cell.convert_walls()}", end="")
-        print()
-
-# TEST
-
-
-def main() -> None:
-    x, y = 5, 5
-    grid = [[Cell() for _ in range(x)] for _ in range(y)]
-    grid[2][2].visited = True
-    grid[0][0].visited = True
-
-    check_walls(grid)
-    display_grid(grid)
-
-
-if __name__ == "__main__":
-    main()

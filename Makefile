@@ -13,7 +13,7 @@ install:
 	$(VENV)/bin/pip install -r requirements.txt
 
 run:
-	@test -d $(VENV) || (echo "\33[93mRun 'make setup' first\33[0m"; exit 1)
+	@test -d $(VENV) || (echo "\33[93;1mRun 'make setup' first\33[0m"; exit 1)
 	$(VENV)/bin/$(P3) a_maze_ing.py $(CONFIG)
 
 debug:
@@ -26,7 +26,7 @@ clean:
 	@echo "\n\33[93mDon't forget to deactivate $(VENV)\33[0m"
 
 lint:
-	flake8 .
+	flake8 src/*.py utils/*.py a_maze_ing.py
 	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 lint-strict:

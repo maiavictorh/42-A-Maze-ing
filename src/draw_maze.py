@@ -1,8 +1,6 @@
 from src.Cell import Cell
+from utils import WHITE, NC, PURPLE_42 as P42
 
-WHITE = "\033[47;30m"
-NC = "\033[0m"
-DOOR = "\033[45;30m"
 Grid = list[list[Cell]]
 
 
@@ -44,6 +42,8 @@ def draw_maze(grid: Grid, entry: tuple, exit: tuple) -> None:
             left = bool(cell.walls & W)
             right = bool(cell.walls & E)
 
+            if cell.cell42:
+                MID_CLOSED = f"{WHITE} {NC}{P42}   {NC}{WHITE} {NC}"
             if left and right:
                 print(MID_CLOSED, end="")
             elif left and not right:

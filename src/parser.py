@@ -5,27 +5,7 @@ from utils import NumericProcessor, CoordinateProcessor, \
                     TextProcessor, ConditionProcessor
 
 
-def validate_parser(validators: dict[str, Processor],
-                    config: dict[str, Any]) -> None:
-    for k in validators:
-        if k not in config:
-            raise KeyError(f"Missing parameter: {k}")
-
-    if config['WIDTH'] < 5 or config['HEIGHT'] < 5:
-        raise MazeError("Maze is too small, mininum: 5x5")
-
-    if config['ENTRY'] == config['EXIT']:
-        raise CoordinateError("Entry and Exit must be different")
-
-    entry_x, entry_y = config["ENTRY"]
-    exit_x, exit_y = config["EXIT"]
-    if entry_x >= config["WIDTH"] or entry_y >= config["HEIGHT"]:
-        raise CoordinateError("Entry must be inside the Maze")
-    if exit_x >= config["WIDTH"] or exit_y >= config["HEIGHT"]:
-        raise CoordinateError("Exit must be inside the Maze")
-
-
-def parser(args: list[str]) -> dict[str, Processor]:
+def parser(args: list[str]) -> dict[str, Any]:
     validators: dict[str, Processor] = {
             "WIDTH": NumericProcessor(),
             "HEIGHT": NumericProcessor(),
@@ -44,7 +24,7 @@ def parser(args: list[str]) -> dict[str, Processor]:
             if not line or line.startswith("#"):
                 continue
             elif "=" not in line:
-                raise ValueError("Invalid line")
+                raise ValueError("Invalid format")
 
             key, value = line.split("=", 1)
             key = key.strip()
@@ -55,6 +35,21 @@ def parser(args: list[str]) -> dict[str, Processor]:
                 raise KeyError("No duplicated config allowed")
             config[key] = validators[key].converter(value)
 
-        validate_parser(validators, config)
+        for k in validators:
+            if k not in config:
+                raise KeyError(f"Missing parameter: {k}")
+
+        if config['WIDTH'] < 5 or config['HEIGHT'] < 5:
+            raise MazeError("Maze is too small, mininum: 5x5")
+
+        if config['ENTRY'] == config['EXIT']:
+            raise CoordinateError("Entry and Exit must be different")
+
+        entry_x, entry_y = config["ENTRY"]
+        exit_x, exit_y = config["EXIT"]
+        if entry_x >= config["WIDTH"] or entry_y >= config["HEIGHT"]:
+            raise CoordinateError("Entry must be inside the Maze")
+        if exit_x >= config["WIDTH"] or exit_y >= config["HEIGHT"]:
+            raise CoordinateError("Exit must be inside the Maze")
 
     return config

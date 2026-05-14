@@ -24,6 +24,7 @@ class Cell:
         self.walls = 15
         self.visited = False  # TEST
         self.cell42 = False
+        self.in_path = False
 
     def convert_walls(self) -> str:
         return "0123456789ABCDEF"[self.walls]

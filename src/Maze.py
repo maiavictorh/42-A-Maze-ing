@@ -1,6 +1,6 @@
 from .Cell import Cell
 from utils import CoordinateError
-from random import shuffle
+from random import shuffle, seed, Random
 from typing import Any
 
 Grid = list[list[Cell]]
@@ -16,7 +16,7 @@ class Maze:
     def __init__(self, width: int, height: int, seed: int):
         self.width = width
         self.height = height
-        self.seed = seed
+        self.seed = Random(seed)
         self.grid = self.create_grid()
 
     def in_bounds(self, x: int, y: int) -> bool:
@@ -94,22 +94,37 @@ class Maze:
 
         return grid
 
-    def broke_walls(self, x: int, y: int, grid: Grid) -> None:
-        grid[y][x].visited = True
+    def broke_walls(self, x: int, y: int, exit_x: int, exit_y: int) -> bool:
+        current = self.grid[y][x]
+        current.visited = True
+
+        found_exit = (x == exit_x and y == exit_y)
 
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
-        shuffle(moves)
+        self.seed.shuffle(moves)
 
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
 
-            if nx >= 0 and nx < self.width and ny >= 0 and ny < self.height:
-                if not grid[ny][nx].visited and not grid[ny][nx].cell42:
+            if not self.in_bounds(nx, ny):
+                continue
 
-                    direction = Cell.convert_direction((dx, dy))
-                    opposite = Cell.convert_direction((-dx, -dy))
+            neighbor = self.grid[ny][nx]
 
-                    grid[y][x].walls &= ~direction
-                    grid[ny][nx].walls &= ~opposite
+            if neighbor.visited or neighbor.cell42:
+                continue
 
-                    self.broke_walls(nx, ny, grid)
+            direction = Cell.convert_direction((dx, dy))
+            opposite = Cell.convert_direction((-dx, -dy))
+
+            current.walls &= ~direction
+            neighbor.walls &= ~opposite
+
+            if self.broke_walls(nx, ny, exit_x, exit_y):
+                found_exit = True
+
+        if found_exit:
+            current.in_path = True
+
+        return found_exit
+            

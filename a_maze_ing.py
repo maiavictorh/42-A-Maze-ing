@@ -86,12 +86,13 @@ def test():
 
             flag2 = False
             draw_maze(maze.grid, config["ENTRY"], config["EXIT"], flag, flag2)
-            gen_hex_output(maze.grid, "maze.txt", config["ENTRY"], config["EXIT"])
+            gen_hex_output(maze.grid, "maze.txt",
+                           config["ENTRY"], config["EXIT"])
 
-            print(f"\n{P}==={NC} {PB}A-Maze-ing{NC} {P}==={NC}")
+            print(f"\n{PB}==={NC} {P}A-Maze-ing{NC} {PB}==={NC}")
             options = ["Re-generate a new maze",
-                    "Show/Hide path from entry to exit",
-                    "Rotate maze colors", "Quit"]
+                       "Show/Hide path from entry to exit",
+                       "Rotate maze colors", "Quit"]
             i = 1
             for opt in options:
                 print(f"{i}. {opt}")
@@ -106,7 +107,7 @@ def test():
                 case 2:
                     print(CLEAR, end="")
                     flag = True if not flag else False
-                    
+
                 case 3:
                     print(CLEAR, end="")
                     flag2 = True if not flag2 else False

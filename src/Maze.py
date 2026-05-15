@@ -1,6 +1,6 @@
 from .Cell import Cell
 from utils import CoordinateError
-from random import shuffle, seed, Random
+from random import Random
 from typing import Any
 
 Grid = list[list[Cell]]
@@ -128,4 +128,3 @@ class Maze:
             current.in_path = True
 
         return found_exit
-            

@@ -39,8 +39,8 @@ def parser(args: list[str]) -> dict[str, Any]:
             if k not in config:
                 raise KeyError(f"Missing parameter: {k}")
 
-        if config['WIDTH'] < 5 or config['HEIGHT'] < 5:
-            raise MazeError("Maze is too small, mininum: 5x5")
+        if config['WIDTH'] < 3 or config['HEIGHT'] < 3:
+            raise MazeError("Maze is too small, mininum: 3x3")
 
         if config['ENTRY'] == config['EXIT']:
             raise CoordinateError("Entry and Exit must be different")

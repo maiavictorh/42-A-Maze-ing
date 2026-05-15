@@ -62,35 +62,36 @@ class Maze:
         two_height = four_height
 
         # mark 4
-        for i in range(2):
-            grid[four_height][four_width].cell42 = True
-            four_height += 1
-        for i in range(2):
-            grid[four_height][four_width].cell42 = True
-            four_width += 1
-        for i in range(2):
-            grid[four_height][four_width].cell42 = True
-            four_height -= 1
-        for i in range(5):
-            grid[four_height][four_width].cell42 = True
-            four_height += 1
+        if self.width > 8 and self.height > 8:
+            for i in range(2):
+                grid[four_height][four_width].cell42 = True
+                four_height += 1
+            for i in range(2):
+                grid[four_height][four_width].cell42 = True
+                four_width += 1
+            for i in range(2):
+                grid[four_height][four_width].cell42 = True
+                four_height -= 1
+            for i in range(5):
+                grid[four_height][four_width].cell42 = True
+                four_height += 1
 
-        # mark 2
-        for i in range(2):
-            grid[two_height][two_width].cell42 = True
-            two_width += 1
-        for i in range(2):
-            grid[two_height][two_width].cell42 = True
-            two_height += 1
-        for i in range(2):
-            grid[two_height][two_width].cell42 = True
-            two_width -= 1
-        for i in range(2):
-            grid[two_height][two_width].cell42 = True
-            two_height += 1
-        for i in range(3):
-            grid[two_height][two_width].cell42 = True
-            two_width += 1
+            # mark 2
+            for i in range(2):
+                grid[two_height][two_width].cell42 = True
+                two_width += 1
+            for i in range(2):
+                grid[two_height][two_width].cell42 = True
+                two_height += 1
+            for i in range(2):
+                grid[two_height][two_width].cell42 = True
+                two_width -= 1
+            for i in range(2):
+                grid[two_height][two_width].cell42 = True
+                two_height += 1
+            for i in range(3):
+                grid[two_height][two_width].cell42 = True
+                two_width += 1
 
         return grid
 

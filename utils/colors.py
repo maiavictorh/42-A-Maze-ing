@@ -1,5 +1,7 @@
 GREEN = "\033[92m"
+GREEN_BK = "\033[42m"
 YELLOW = "\33[1;93m"
+YELLOW_BK = "\33[43m"
 RED = "\033[31m"
 RED_BK = "\033[41;30m"
 NC = "\33[0m"

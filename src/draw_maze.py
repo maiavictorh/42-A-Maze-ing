@@ -1,4 +1,4 @@
-from utils import WHITE, NC, PURPLE_42 as P42, GREEN, ROXO, RED_BK
+from utils import WHITE, NC, PURPLE_42 as P42, GREEN, ROXO, RED_BK, YELLOW_BK, GREEN_BK
 from typing import Optional
 from src.Cell import Cell
 import random
@@ -41,10 +41,16 @@ def draw_maze(grid: Grid, entry: tuple, exit: tuple,
     ty, tx = exit
 
     walls_colors = WHITE
-    colors = [GREEN, ROXO, RED_BK]
+    entry_color = ROXO
+    exit_color = RED_BK
+    f42_color = P42
+    colors = [GREEN_BK, ROXO, RED_BK, YELLOW_BK]
+
     if rotate_colors:
-        random.shuffle(colors)
-        walls_colors = colors[0]
+        walls_colors = random.choice(colors)
+        exit_color = random.choice(colors)
+        entry_color = random.choice(colors)
+        f42_color = random.choice(colors)
 
     for x, row in enumerate(grid):  # Loop principal para todas as linhas
 
@@ -70,7 +76,7 @@ def draw_maze(grid: Grid, entry: tuple, exit: tuple,
                 right_mid_open = path("right_mid_open", walls_colors, way)
 
             if is_entry or is_exit:
-                door = ROXO if is_entry else RED_BK
+                door = entry_color if is_entry else exit_color
                 print_door = f" {door} {NC} "
 
                 mid_closed = path("mid_closed", walls_colors, print_door)
@@ -82,7 +88,7 @@ def draw_maze(grid: Grid, entry: tuple, exit: tuple,
             right = bool(cell.walls & E)
 
             if cell.cell42:
-                mid_closed = path("cell42", walls_colors, P42)
+                mid_closed = path("cell42", walls_colors, f42_color)
             if left and right:
                 print(mid_closed, end="")
             elif left and not right:

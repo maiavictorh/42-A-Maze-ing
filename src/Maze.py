@@ -1,9 +1,8 @@
 from .Cell import Cell
 from utils import CoordinateError
 from random import shuffle, seed, Random
+import random
 from typing import Any
-
-Grid = list[list[Cell]]
 
 DIRECTIONS = {
         Cell.N: (0, -1),
@@ -48,7 +47,7 @@ class Maze:
             return False
         return True
 
-    def create_grid(self) -> Grid:
+    def create_grid(self) -> list[list[Cell]]:
         grid = [[Cell() for _ in range(self.width)]
                 for _ in range(self.height)]
 
@@ -128,4 +127,23 @@ class Maze:
             current.in_path = True
 
         return found_exit
-            
+
+    def broke_maze(self) -> None:
+        for x, row in enumerate(self.grid):
+            valid_cells: list[Cell] = []
+
+            for y, cell in enumerate(row):
+                if (
+                    not cell.cell42
+                    and x > 0
+                    and x < self.height - 1
+                    and y > 0
+                    and y < self.width - 1
+                ):
+                    valid_cells.append((y, cell))
+
+            if valid_cells:
+                y, cell = self.seed.choice(valid_cells)
+                cell.walls &= ~Cell.N
+                if x > 0:
+                    self.grid[x - 1][y].walls &= ~Cell.S

@@ -1,7 +1,6 @@
 from .Cell import Cell
-from utils import CoordinateError
-from random import shuffle, seed, Random
-import random
+from .Utils import CoordinateError
+from random import Random
 from typing import Any
 
 
@@ -25,10 +24,10 @@ class Maze:
         neighbors = []
 
         dirs = {
-        Cell.N: (0, -1),
-        Cell.S: (0, 1),
-        Cell.E: (1, 0),
-        Cell.W: (-1, 0)
+            Cell.N: (0, -1),
+            Cell.S: (0, 1),
+            Cell.E: (1, 0),
+            Cell.W: (-1, 0)
         }
 
         for direction, (dx, dy) in dirs.items():
@@ -127,7 +126,6 @@ class Maze:
                 self.path.append((dx, dy))
                 found_exit = True
 
-
         if found_exit:
             current.in_path = True
 
@@ -135,7 +133,7 @@ class Maze:
 
     def broke_maze(self) -> None:
         for x, row in enumerate(self.grid):
-            valid_cells: list[Cell] = []
+            valid_cells: list[tuple[int, Cell]] = []
 
             for y, cell in enumerate(row):
                 if (
@@ -144,6 +142,7 @@ class Maze:
                     and x < self.height - 1
                     and y > 0
                     and y < self.width - 1
+                    and not self.grid[x][y - 1].cell42
                 ):
                     valid_cells.append((y, cell))
 
@@ -153,7 +152,8 @@ class Maze:
                 if x > 0:
                     self.grid[x - 1][y].walls &= ~Cell.S
 
-    def gen_hex_output(self, output_name: str, entry: tuple, exit: tuple) -> None:
+    def gen_hex_output(self, output_name: str,
+                       entry: tuple, exit: tuple) -> None:
         dirs = {
             (0, -1): "N",
             (1, 0): "E",

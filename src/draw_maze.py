@@ -1,19 +1,21 @@
-from utils import WHITE, NC, PURPLE_42 as P42, GREEN, ROXO, RED_BK, YELLOW_BK, GREEN_BK
+from .Utils import WHITE, NC, PURPLE_42 as P42, GREEN, \
+                    ROXO, RED_BK, YELLOW_BK, GREEN_BK
 from typing import Optional
 from src.Cell import Cell
 import random
 
 
-def path(path_config: str, wall_color: str, fill: Optional[str] = "   ") -> str:
-    MID_CLOSED = f"{wall_color} {NC}{fill}{wall_color} {NC}"
+def path(path_config: str, wall_color: str,
+         fill: Optional[str] = "   ") -> str:
+    MID_CLOSED = f"{wall_color}▒{NC}{fill}{wall_color} {NC}"
     MID_OPEN = f" {fill} "
     LEFT_MID_OPEN = f" {fill}{wall_color} {NC}"
-    RIGHT_MID_OPEN = f"{wall_color} {NC}{fill} "
+    RIGHT_MID_OPEN = f"{wall_color}▒{NC}{fill} "
 
-    UP_OPEN = f"{wall_color} {NC}   {wall_color} {NC}"
+    UP_OPEN = f"{wall_color}▒{NC}   {wall_color} {NC}"
     UP_CLOSED = f"{wall_color}     {NC}"
 
-    DOWN_OPEN = f"{wall_color} {NC}   {wall_color} {NC}"
+    DOWN_OPEN = f"{wall_color} {NC}   {wall_color}▒{NC}"
     DOWN_CLOSED = f"{wall_color}     {NC}"
     CELL42 = f"{wall_color} {NC}{fill}   {NC}{wall_color} {NC}"
 
@@ -51,13 +53,14 @@ def draw_maze(grid: list[list[Cell]], entry: tuple, exit: tuple,
         entry_color = random.choice(colors)
         f42_color = random.choice(colors)
 
-    for x, row in enumerate(grid):  # Loop principal para todas as linhas
+    for x, row in enumerate(grid):  # Main loop, print all the lines
 
-        for cell in row:  # Primeiro loop, print so a parte de cima da celula
-            print(path("up_closed", walls_colors) if cell.walls & N else path("up_open", walls_colors), end="")
+        for cell in row:  # First loop, prints the upper wall of the cell
+            print(path("up_closed", walls_colors)
+                  if cell.walls & N else path("up_open", walls_colors), end="")
         print()
 
-        for y, cell in enumerate(row):  # Segundo loop, printa o meio da cell
+        for y, cell in enumerate(row):  # Prints the middle of the cell
 
             is_entry = (x == ex and y == ey)
             is_exit = (x == tx and y == ty)
@@ -81,7 +84,8 @@ def draw_maze(grid: list[list[Cell]], entry: tuple, exit: tuple,
                 mid_closed = path("mid_closed", walls_colors, print_door)
                 mid_open = path("mid_open", walls_colors, print_door)
                 left_mid_open = path("left_mid_open", walls_colors, print_door)
-                right_mid_open = path("right_mid_open", walls_colors, print_door)
+                right_mid_open = path("right_mid_open",
+                                      walls_colors, print_door)
 
             left = bool(cell.walls & W)
             right = bool(cell.walls & E)
@@ -98,6 +102,7 @@ def draw_maze(grid: list[list[Cell]], entry: tuple, exit: tuple,
                 print(mid_open, end="")
         print()
 
-    for cell in grid[-1]:
-        print(path("down_closed", walls_colors) if cell.walls & S else path("down_open", walls_colors), end="")
+    for cell in grid[-1]:  # Prints the last row's walls
+        print(path("down_closed", walls_colors)
+              if cell.walls & S else path("down_open", walls_colors), end="")
     print()

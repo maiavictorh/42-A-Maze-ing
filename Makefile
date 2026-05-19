@@ -1,34 +1,50 @@
-P3=python3
-VENV=venv
-CONFIG="config.txt"
+P3= python3
+VENV= venv
+ACTIVATE= . $(VENV)/bin/activate
 
-setup:
-	$(P3) -m venv $(VENV)
-	$(VENV)/bin/pip install -r requirements.txt
-	@echo "\n\33[32mVirtual Environment created successfully!\33[0m"
-	@echo " To activate the Environment, execute:"
-	@echo "    source $(VENV)/bin/activate"
+MAIN= a_maze_ing.py
+CONFIG= config.txt
+
+PIP= $(VENV)/bin/pip
+PYTHON= $(VENV)/bin/python3
+FLAKE8= $(VENV)/bin/flake8
+MYPY= $(VENV)/bin/mypy
+RM= rm -rf
+
+all: run
 
 install:
-	$(VENV)/bin/pip install -r requirements.txt
+	$(P3) -m venv $(VENV)
+	$(PIP) install --upgrade pip
+	$(PIP) install -r requirements.txt
+	@echo "Virtual environment created successfully."
 
 run:
-	@test -d $(VENV) || (echo "\33[93;1mRun 'make setup' first\33[0m"; exit 1)
-	$(VENV)/bin/$(P3) a_maze_ing.py $(CONFIG)
+	$(PYTHON) $(MAIN) $(CONFIG)
 
 debug:
-	$(VENV)/bin/$(P3) -m pdb a_maze_ing.py $(CONFIG)
+	$(PYTHON) -m pdb $(MAIN) $(CONFIG)
 
 clean:
-	rm -rf ./$(VENV)
+	$(RM) .mypy_cache
+	$(RM) .pytest_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	@echo "\n\33[93mDon't forget to deactivate $(VENV)\33[0m"
+	find . -type f -name "*.pyc" -delete
+	$(RM) $(VENV)
 
 lint:
-	flake8 src/*.py utils/*.py a_maze_ing.py
-	mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	$(FLAKE8) . --exclude $(VENV)
+	$(MYPY) . \
+		--warn-return-any \
+		--warn-unused-ignores \
+		--ignore-missing-imports \
+		--disallow-untyped-defs \
+		--check-untyped-defs
 
 lint-strict:
+	$(FLAKE8) .
+	$(MYPY) . --strict
 
-.PHONY: setup install run debug clean lint lint-strict
+re: clean run
+
+.PHONY: all install run debug clean lint lint-strict re

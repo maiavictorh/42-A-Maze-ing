@@ -1,11 +1,11 @@
-from utils import RED, NC, YELLOW, PURPLE as P, PURPLE_BL as PB, CLEAR
-from utils import MazeError, CoordinateError
-from src import parser, draw_maze, Maze
-import random
 import sys
+import random
+from src import parser, draw_maze, Maze
+from src import RED, NC, YELLOW, PURPLE as P, PURPLE_BL as PB, CLEAR, \
+                    MazeError, CoordinateError
 
 
-def main():
+def main() -> None:
     try:
         if len(sys.argv) != 2:
             raise ValueError(f"Expected 2 arguments, given: {len(sys.argv)}")
@@ -28,13 +28,14 @@ def main():
             if not config["PERFECT"]:
                 maze.broke_maze()
 
-            draw_maze(maze.grid, config["ENTRY"], config["EXIT"], show_path, rotate_colors)
+            draw_maze(maze.grid, config["ENTRY"], config["EXIT"],
+                      show_path, rotate_colors)
             maze.gen_hex_output("maze.txt", config["ENTRY"], config["EXIT"])
 
             print(f"\n{P}==={NC} {PB}A-Maze-ing{NC} {P}==={NC}")
             options = ["Re-generate a new maze",
-                    "Show/Hide path from entry to exit",
-                    "Rotate maze colors", "Quit"]
+                       "Show/Hide path from entry to exit",
+                       "Rotate maze colors", "Quit"]
             i = 1
             for opt in options:
                 print(f"{i}. {opt}")
@@ -49,7 +50,7 @@ def main():
                 case 2:
                     print(CLEAR, end="")
                     show_path = True if not show_path else False
-                    
+
                 case 3:
                     print(CLEAR, end="")
                     rotate_colors = True if not rotate_colors else False

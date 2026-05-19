@@ -1,7 +1,7 @@
 from typing import Any
-from utils.Processor import Processor
-from utils import MazeError, CoordinateError
-from utils import NumericProcessor, CoordinateProcessor, \
+from .Utils import Processor
+from .Utils import MazeError, CoordinateError
+from .Utils import NumericProcessor, CoordinateProcessor, \
                     TextProcessor, ConditionProcessor
 
 

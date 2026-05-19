@@ -4,19 +4,14 @@ from random import shuffle, seed, Random
 import random
 from typing import Any
 
-DIRECTIONS = {
-        Cell.N: (0, -1),
-        Cell.S: (0, 1),
-        Cell.E: (1, 0),
-        Cell.W: (-1, 0)}
-
 
 class Maze:
     def __init__(self, width: int, height: int, seed: int):
         self.width = width
         self.height = height
         self.seed = Random(seed)
-        self.grid = self.create_grid()
+        self.grid: list[list[Cell]] = self.create_grid()
+        self.path: list[tuple[int, int]] = []
 
     def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
@@ -29,7 +24,14 @@ class Maze:
     def get_neighbors(self, x: int, y: int) -> list[tuple[int, int, int]]:
         neighbors = []
 
-        for direction, (dx, dy) in DIRECTIONS.items():
+        dirs = {
+        Cell.N: (0, -1),
+        Cell.S: (0, 1),
+        Cell.E: (1, 0),
+        Cell.W: (-1, 0)
+        }
+
+        for direction, (dx, dy) in dirs.items():
             nx = x + dx
             ny = y + dy
 
@@ -121,7 +123,10 @@ class Maze:
             neighbor.walls &= ~opposite
 
             if self.broke_walls(nx, ny, exit_x, exit_y):
+
+                self.path.append((dx, dy))
                 found_exit = True
+
 
         if found_exit:
             current.in_path = True
@@ -147,3 +152,29 @@ class Maze:
                 cell.walls &= ~Cell.N
                 if x > 0:
                     self.grid[x - 1][y].walls &= ~Cell.S
+
+    def gen_hex_output(self, output_name: str, entry: tuple, exit: tuple) -> None:
+        dirs = {
+            (0, -1): "N",
+            (1, 0): "E",
+            (0, 1): "S",
+            (-1, 0): "W"
+        }
+
+        try:
+            with open(output_name, "w") as file:
+                for row in self.grid:
+
+                    for cell in row:
+                        file.write(cell.convert_walls())
+                    file.write("\n")
+
+                file.write(f"\n{str(entry)}\n{str(exit)}\n")
+
+                self.path.reverse()
+
+                for direction in self.path:
+                    file.write(f"{dirs[direction]}")
+
+        except Exception:
+            raise

@@ -3,7 +3,6 @@ from typing import Optional
 from src.Cell import Cell
 import random
 
-Grid = list[list[Cell]]
 
 def path(path_config: str, wall_color: str, fill: Optional[str] = "   ") -> str:
     MID_CLOSED = f"{wall_color} {NC}{fill}{wall_color} {NC}"
@@ -32,7 +31,7 @@ def path(path_config: str, wall_color: str, fill: Optional[str] = "   ") -> str:
     return walls[path_config]
 
 
-def draw_maze(grid: Grid, entry: tuple, exit: tuple,
+def draw_maze(grid: list[list[Cell]], entry: tuple, exit: tuple,
               show_path: Optional[bool] = False,
               rotate_colors: Optional[bool] = False) -> None:
 

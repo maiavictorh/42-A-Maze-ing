@@ -1,7 +1,7 @@
 import sys
 import random
 from src import parser, Maze
-from src import RED, NC, YELLOW, PURPLE as P, PURPLE_BL as PB, CLEAR, \
+from src import RED, NC, YELLOW, PURPLE as P, PURPLE_BLINK as PB, CLEAR, \
                     MazeError, CoordinateError
 
 

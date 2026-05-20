@@ -2,20 +2,26 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-GREEN = "\033[92m"
-GREEN_BK = "\033[42m"
-YELLOW = "\33[1;93m"
-YELLOW_BK = "\33[43m"
 RED = "\033[31m"
-RED_BK = "\033[41;30m"
-NC = "\33[0m"
-PURPLE_BL = "\33[1;35;5m"
+GREEN = "\033[92m"
+YELLOW = "\33[1;93m"
 PURPLE = "\33[1;35m"
-CLEAR = "\033c"
-ROXO = "\033[45;30m"
 PURPLE_42 = "\33[48;2;95;0;151m"
-WHITE = "\033[47;30m"
-GRAY = "\33[3;100m"
+
+ENTRY = "\33[5;32m"
+EXIT = "\33[5;31m"
+PURPLE_BLINK = "\33[1;35;5m"
+YELLOW_BLINK = "\33[5;93m"
+WHITE_BLINK = "\33[5m"
+
+YELLOW_BACK = "\33[43m"
+RED_BACK = "\033[41;30m"
+PURPLE_BACK = "\033[45;30m"
+WHITE_BACK = "\033[47;30m"
+GREEN_BACK = "\033[42m"
+
+NC = "\33[0m"
+CLEAR = "\033c"
 
 
 class MazeError(Exception):

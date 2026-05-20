@@ -1,4 +1,6 @@
-from .Utils import WHITE, ROXO, RED_BK, PURPLE_42 as P42, GREEN_BK, YELLOW_BK
+from .Utils import WHITE_BACK, PURPLE_BACK, RED_BACK, PURPLE_42 as P42, \
+                    GREEN_BACK, YELLOW_BACK, ENTRY, EXIT, PURPLE_BLINK, \
+                    YELLOW_BLINK
 from .Utils import CoordinateError
 from random import Random, choice
 from typing import Any, Optional
@@ -185,22 +187,25 @@ class Maze:
                   show_path: Optional[bool] = False,
                   rotate_colors: Optional[bool] = False) -> None:
 
-        colors = [GREEN_BK, ROXO, RED_BK, YELLOW_BK]
-        walls_colors = WHITE
-        entry_color = ROXO
-        exit_color = RED_BK
+        colors = [GREEN_BACK, PURPLE_BACK, RED_BACK, YELLOW_BACK]
+        walls_colors = WHITE_BACK
+        entry_color = ENTRY
+        exit_color = EXIT
         c42_color = P42
         ex, ey = entry
         ty, tx = exit
 
         if rotate_colors:
             walls_colors = choice(colors)
-            exit_color = choice(colors)
-            entry_color = choice(colors)
             c42_color = choice(colors)
+            while c42_color == walls_colors:
+                c42_color = choice(colors)
+            if walls_colors == GREEN_BACK:
+                entry_color = PURPLE_BLINK
+            if walls_colors == RED_BACK:
+                exit_color = YELLOW_BLINK
 
         for x, row in enumerate(self.grid):  # Main loop, print all the lines
-
             for cell in row:  # First loop, prints the upper wall of the cell
                 print(self._wall_segment("up_closed", walls_colors)
                       if cell.walls & 1 else
@@ -218,7 +223,7 @@ class Maze:
 
                 if is_entry or is_exit:
                     door = entry_color if is_entry else exit_color
-                    inside_cell = f" {door} {NC} "
+                    inside_cell = f" {door}█{NC} "
 
                 elif cell.cell42:
                     inside_cell = f"{c42_color}   {NC}"
@@ -249,6 +254,7 @@ class Maze:
             print(self._wall_segment("down_closed", walls_colors)
                   if cell.walls & 4 else
                   self._wall_segment("down_open", walls_colors), end="")
+
         print()
 
     def _wall_segment(self, segment_config: str, wall_color: str,
@@ -256,7 +262,6 @@ class Maze:
         """
         Returns the ascii segment corresponding to the requested configuration.
         """
-
         segment = {
             "mid_closed": f"{wall_color}▒{NC}{fill}{wall_color} {NC}",
             "mid_open": f" {fill} ",

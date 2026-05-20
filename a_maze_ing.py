@@ -1,6 +1,6 @@
 import sys
 import random
-from src import parser, draw_maze, Maze
+from src import parser, Maze
 from src import RED, NC, YELLOW, PURPLE as P, PURPLE_BL as PB, CLEAR, \
                     MazeError, CoordinateError
 
@@ -28,8 +28,9 @@ def main() -> None:
             if not config["PERFECT"]:
                 maze.broke_maze()
 
-            draw_maze(maze.grid, config["ENTRY"], config["EXIT"],
-                      show_path, rotate_colors)
+            print(CLEAR, end="")
+            maze.draw_maze(config["ENTRY"], config["EXIT"],
+                           show_path, rotate_colors)
             maze.gen_hex_output("maze.txt", config["ENTRY"], config["EXIT"])
 
             print(f"\n{P}==={NC} {PB}A-Maze-ing{NC} {P}==={NC}")

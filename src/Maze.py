@@ -1,7 +1,9 @@
-from .Cell import Cell
+from .Utils import WHITE, ROXO, RED_BK, PURPLE_42 as P42, GREEN_BK, YELLOW_BK
 from .Utils import CoordinateError
-from random import Random
-from typing import Any
+from random import Random, choice
+from typing import Any, Optional
+from .Utils import NC, GREEN
+from .Cell import Cell
 
 
 class Maze:
@@ -12,11 +14,11 @@ class Maze:
         self.grid: list[list[Cell]] = self.create_grid()
         self.path: list[tuple[int, int]] = []
 
-    def in_bounds(self, x: int, y: int) -> bool:
+    def _in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def get_cell(self, x: int, y: int) -> Cell:
-        if not self.in_bounds(x, y):
+        if not self._in_bounds(x, y):
             raise CoordinateError("Couldn't reach Cell: Out of bounds")
         return self.grid[y][x]
 
@@ -34,7 +36,7 @@ class Maze:
             nx = x + dx
             ny = y + dy
 
-            if self.in_bounds(nx, ny):
+            if self._in_bounds(nx, ny):
                 neighbors.append((direction, nx, ny))
         return neighbors
 
@@ -107,7 +109,7 @@ class Maze:
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
 
-            if not self.in_bounds(nx, ny):
+            if not self._in_bounds(nx, ny):
                 continue
 
             neighbor = self.grid[ny][nx]
@@ -178,3 +180,92 @@ class Maze:
 
         except Exception:
             raise
+
+    def draw_maze(self, entry: tuple, exit: tuple,
+                  show_path: Optional[bool] = False,
+                  rotate_colors: Optional[bool] = False) -> None:
+
+        colors = [GREEN_BK, ROXO, RED_BK, YELLOW_BK]
+        walls_colors = WHITE
+        entry_color = ROXO
+        exit_color = RED_BK
+        c42_color = P42
+        ex, ey = entry
+        ty, tx = exit
+
+        if rotate_colors:
+            walls_colors = choice(colors)
+            exit_color = choice(colors)
+            entry_color = choice(colors)
+            c42_color = choice(colors)
+
+        for x, row in enumerate(self.grid):  # Main loop, print all the lines
+
+            for cell in row:  # First loop, prints the upper wall of the cell
+                print(self._wall_segment("up_closed", walls_colors)
+                      if cell.walls & 1 else
+                      self._wall_segment("up_open", walls_colors), end="")
+            print()
+
+            for y, cell in enumerate(row):  # Prints the middle of the cell
+
+                is_entry = (x == ex and y == ey)
+                is_exit = (x == tx and y == ty)
+                inside_cell = "   "
+
+                if show_path and cell.in_path:
+                    inside_cell = f" {GREEN}\33[1m+ "
+
+                if is_entry or is_exit:
+                    door = entry_color if is_entry else exit_color
+                    inside_cell = f" {door} {NC} "
+
+                elif cell.cell42:
+                    inside_cell = f"{c42_color}   {NC}"
+
+                mid_closed = self._wall_segment("mid_closed", walls_colors,
+                                                inside_cell)
+                mid_open = self._wall_segment("mid_open", walls_colors,
+                                              inside_cell)
+                left_mid_open = self._wall_segment("left_mid_open",
+                                                   walls_colors, inside_cell)
+                right_mid_open = self._wall_segment("right_mid_open",
+                                                    walls_colors, inside_cell)
+
+                left = bool(cell.walls & 8)
+                right = bool(cell.walls & 2)
+
+                if left and right:
+                    print(mid_closed, end="")
+                elif left and not right:
+                    print(right_mid_open, end="")
+                elif not left and right:
+                    print(left_mid_open, end="")
+                else:
+                    print(mid_open, end="")
+            print()
+
+        for cell in self.grid[-1]:  # Prints the last row's walls
+            print(self._wall_segment("down_closed", walls_colors)
+                  if cell.walls & 4 else
+                  self._wall_segment("down_open", walls_colors), end="")
+        print()
+
+    def _wall_segment(self, segment_config: str, wall_color: str,
+                      fill: Optional[str] = "   ") -> str:
+        """
+        Returns the ascii segment corresponding to the requested configuration.
+        """
+
+        segment = {
+            "mid_closed": f"{wall_color}▒{NC}{fill}{wall_color} {NC}",
+            "mid_open": f" {fill} ",
+            "left_mid_open": f" {fill}{wall_color} {NC}",
+            "right_mid_open": f"{wall_color}▒{NC}{fill} ",
+            "up_open": f"{wall_color}▒{NC}   {wall_color} {NC}",
+            "up_closed": f"{wall_color}     {NC}",
+            "down_open": f"{wall_color} {NC}   {wall_color}▒{NC}",
+            "down_closed": f"{wall_color}     {NC}",
+            "cell42": f"{wall_color} {NC}{fill}   {NC}{wall_color} {NC}"
+        }
+        return segment[segment_config]

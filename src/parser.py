@@ -1,8 +1,7 @@
 from typing import Any
-from .Utils import Processor
-from .Utils import MazeError, CoordinateError
-from .Utils import NumericProcessor, CoordinateProcessor, \
-                    TextProcessor, ConditionProcessor
+from .Utils import Processor, NumericProcessor, CoordinateProcessor, \
+                    TextProcessor, ConditionProcessor, MazeError, \
+                    CoordinateError
 
 
 def parser(args: list[str]) -> dict[str, Any]:
@@ -44,6 +43,9 @@ def parser(args: list[str]) -> dict[str, Any]:
 
         if config['ENTRY'] == config['EXIT']:
             raise CoordinateError("Entry and Exit must be different")
+
+        if ".txt" not in config["OUTPUT_FILE"]:
+            raise ValueError("Invalid output file name: must be .txt format")
 
         entry_x, entry_y = config["ENTRY"]
         exit_x, exit_y = config["EXIT"]

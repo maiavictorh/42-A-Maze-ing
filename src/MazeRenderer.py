@@ -10,9 +10,11 @@ class MazeRenderer:
     def __init__(self, maze: Maze) -> None:
         self.maze = maze
 
-    def draw_maze(self, entry: tuple, exit: tuple,
-                  show_path: Optional[bool] = False,
-                  rotate_colors: Optional[bool] = False) -> None:
+    # RENDERER - Prints on terminal the representation of the maze.
+
+    def render(self, entry: tuple, exit: tuple,
+               show_path: Optional[bool] = False,
+               rotate_colors: Optional[bool] = False) -> None:
 
         colors = [GREEN_BACK, PURPLE_BACK, RED_BACK, YELLOW_BACK]
         walls_colors = WHITE_BACK
@@ -103,8 +105,10 @@ class MazeRenderer:
         }
         return segment[segment_config]
 
-    def gen_hex_output(self, output_name: str,
-                       entry: tuple, exit: tuple) -> None:
+    # EXPORTER - Writes the maze in hexadecimal in a file.
+
+    def export(self, output_name: str,
+               entry: tuple, exit: tuple) -> None:
         dirs = {
             (0, -1): "N",
             (1, 0): "E",
@@ -120,7 +124,6 @@ class MazeRenderer:
 
                 file.write(f"\n{str(entry)}\n{str(exit)}\n")
 
-                self.maze.path.reverse()
                 for direction in self.maze.path:
                     file.write(f"{dirs[direction]}")
 

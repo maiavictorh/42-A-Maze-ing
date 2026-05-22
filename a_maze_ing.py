@@ -10,7 +10,7 @@ def main() -> None:
         maze_gen.run()
 
     except (ValueError, KeyError, CoordinateError,
-            MazeError, FileNotFoundError, PermissionError) as err:
+            MazeError, FileNotFoundError, PermissionError, Exception) as err:
         print(f"{RED}Error: {err}\n  {EXIT}Aborting...  {NC}")
         sys.exit(1)
 

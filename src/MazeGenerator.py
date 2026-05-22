@@ -5,6 +5,7 @@ from .Maze import Cell, Maze
 from .MazeRenderer import MazeRenderer
 from .Utils import (MazeError, CLEAR, NC,
                     PURPLE as P, YELLOW)
+from .MazeSolver import MazeSolver
 
 
 class MazeGenerator:
@@ -21,32 +22,41 @@ class MazeGenerator:
         self.maze = self._generate()
 
     def run(self) -> None:
-        while True:
-            print(CLEAR, end="")
-            renderer = MazeRenderer(self.maze)
-            renderer.draw_maze(self.entry, self.exit,
-                               self.show_path, self.rotate_colors)
-            renderer.gen_hex_output(self.output_file, self.entry, self.exit)
+        try:
+            while True:
+                print(CLEAR, end="")
 
-            options = [
-                "Re-generate a new maze",
-                "Show/Hide path from entry to exit",
-                "Rotate maze colors",
-                "Quit"
-            ]
-            print(f"\n{P}==={NC} {P}A-Maze-ing{NC} {P}==={NC}")
-            for i, opt in enumerate(options, start=1):
-                print(f"{i}. {opt}")
-            match int(input("Choice? (1-4): ")):
-                case 1:
-                    self.maze = self._generate()
-                case 2:
-                    self.switch_show_path()
-                case 3:
-                    self.switch_rotate_colors()
-                case 4:
-                    print(YELLOW, "Quitting...", NC)
-                    exit()
+                renderer = MazeRenderer(self.maze)
+
+                maze_solver = MazeSolver(self.maze)
+                self.maze.path = maze_solver.solve(self.entry, self.exit)
+
+                renderer.render(self.entry, self.exit,
+                                self.show_path, self.rotate_colors)
+                renderer.export(self.output_file, self.entry, self.exit)
+
+                options = [
+                    "Re-generate a new maze",
+                    "Show/Hide path from entry to exit",
+                    "Rotate maze colors",
+                    "Quit"
+                ]
+                print(f"\n{P}==={NC} {P}A-Maze-ing{NC} {P}==={NC}")
+                for i, opt in enumerate(options, start=1):
+                    print(f"{i}. {opt}")
+
+                match int(input("Choice? (1-4): ")):
+                    case 1:
+                        self.maze = self._generate()
+                    case 2:
+                        self.switch_show_path()
+                    case 3:
+                        self.switch_rotate_colors()
+                    case 4:
+                        print(YELLOW, "Quitting...", NC)
+                        exit()
+        except Exception as err:
+            raise Exception(f"MazeGenerator: run {err}")
 
     def switch_show_path(self) -> None:
         self.show_path = not self.show_path
@@ -62,10 +72,11 @@ class MazeGenerator:
 
         x, y = self.entry
         exit_x, exit_y = self.exit
-        self._broke_walls(maze, x, y, exit_x, exit_y)
+        self._carve_passages_iterative(maze, x, y, exit_x, exit_y)
 
         if not self.perfect:
-            self._broke_maze(maze)
+            self._break_random_walls(maze)
+            self._break_random_walls(maze)
 
         return maze
 
@@ -78,9 +89,9 @@ class MazeGenerator:
             return True
         return False
 
-    def _broke_walls(self, maze: Maze,
-                     x: int, y: int,
-                     exit_x: int, exit_y: int) -> bool:
+    def _carve_passages_and_solve_recursive(self, maze: Maze,
+                                            x: int, y: int, exit_x: int,
+                                            exit_y: int) -> bool:
         current = maze.grid[y][x]
         current.visited = True
 
@@ -92,7 +103,7 @@ class MazeGenerator:
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
 
-            if not maze._in_bounds(nx, ny):
+            if not maze.in_bounds(nx, ny):
                 continue
 
             neighbor = maze.grid[ny][nx]
@@ -106,7 +117,7 @@ class MazeGenerator:
             current.walls &= ~direction
             neighbor.walls &= ~opposite
 
-            if self._broke_walls(maze, nx, ny, exit_x, exit_y):
+            if self._carve_passages(maze, nx, ny, exit_x, exit_y):
                 maze.path.append((dx, dy))
                 found_exit = True
 
@@ -115,7 +126,7 @@ class MazeGenerator:
 
         return found_exit
 
-    def _broke_maze(self, maze: Maze) -> None:
+    def _break_random_walls(self, maze: Maze) -> None:
         for y, row in enumerate(maze.grid):
             valid_cells: list[tuple[int, Cell]] = []
 
@@ -135,3 +146,66 @@ class MazeGenerator:
                 cell.walls &= ~Cell.N
                 if y > 0:
                     maze.grid[y - 1][x].walls &= ~Cell.S
+
+    def _carve_passages_iterative(self,
+                                  maze: Maze,
+                                  start_x: int,
+                                  start_y: int,
+                                  exit_x: int,
+                                  exit_y: int) -> bool:
+        
+        stack = []
+
+        start = maze.grid[start_y][start_x]
+        start.visited = True
+
+        moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+        shuffle(moves)
+
+        stack.append((start_x, start_y, moves, 0))
+
+        found_exit = False
+
+        while stack:
+            x, y, moves, i = stack[-1]
+            current: Cell = maze.grid[y][x]
+
+            if x == exit_x and y == exit_y:
+                found_exit = True
+
+            if i >= len(moves):
+
+                stack.pop()
+
+                if stack and found_exit:
+                    px, py, _, _ = stack[-1]
+
+                continue
+
+            stack[-1] = (x, y, moves, i + 1)
+
+            dx, dy = moves[i]
+            nx, ny = x + dx, y + dy
+
+            if not maze.in_bounds(nx, ny):
+                continue
+
+            neighbor = maze.grid[ny][nx]
+
+            if neighbor.visited or neighbor.cell42:
+                continue
+
+            neighbor.visited = True
+
+            direction = Cell.convert_direction((dx, dy))
+            opposite = Cell.convert_direction((-dx, -dy))
+
+            current.walls &= ~direction
+            neighbor.walls &= ~opposite
+
+            next_moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+            shuffle(next_moves)
+
+            stack.append((nx, ny, next_moves, 0))
+
+        return found_exit

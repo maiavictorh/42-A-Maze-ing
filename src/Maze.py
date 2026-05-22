@@ -25,7 +25,7 @@ class Cell:
 
     def __init__(self) -> None:
         self.walls = 15
-        self.visited = False  # TEST
+        self.visited = False
         self.cell42 = False
         self.in_path = False
 
@@ -47,18 +47,18 @@ class Cell:
 
 
 class Maze:
-    def __init__(self, width: int, height: int, seed: int):
+    def __init__(self, width: int, height: int, seed: int) -> None:
         self.width = width
         self.height = height
         self.seed = seed
         self.grid: list[list[Cell]] = self.create_grid()
         self.path: list[tuple[int, int]] = []
 
-    def _in_bounds(self, x: int, y: int) -> bool:
+    def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def get_cell(self, x: int, y: int) -> Cell:
-        if not self._in_bounds(x, y):
+        if not self.in_bounds(x, y):
             raise CoordinateError("Couldn't reach Cell: Out of bounds")
         return self.grid[y][x]
 
@@ -76,7 +76,7 @@ class Maze:
             nx = x + dx
             ny = y + dy
 
-            if self._in_bounds(nx, ny):
+            if self.in_bounds(nx, ny):
                 neighbors.append((direction, nx, ny))
         return neighbors
 

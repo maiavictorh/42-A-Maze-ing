@@ -2,10 +2,10 @@ from sys import exit
 from typing import Any
 from random import randint, shuffle, choice
 from .Maze import Cell, Maze
-from .MazeRenderer import MazeRenderer
-from .Utils import (MazeError, CLEAR, NC,
-                    PURPLE as P, YELLOW)
 from .MazeSolver import MazeSolver
+from .MazeRenderer import MazeRenderer
+from .Utils import (MazeError, CLEAR, NC, PURPLE as P, YELLOW, GREEN_BACK,
+                    PURPLE_BACK, RED_BACK, YELLOW_BACK)
 
 
 class MazeGenerator:
@@ -19,6 +19,7 @@ class MazeGenerator:
         self.seed = randint(1, 999)
         self.show_path = False
         self.rotate_colors = False
+        self.current_colors: Any = None
         self.maze = self._generate()
 
     def run(self) -> None:
@@ -32,20 +33,20 @@ class MazeGenerator:
                 self.maze.path = maze_solver.solve(self.entry, self.exit)
 
                 renderer.render(self.entry, self.exit,
-                                self.show_path, self.rotate_colors)
+                                self.show_path, self.rotate_colors,
+                                self.current_colors)
                 renderer.export(self.output_file, self.entry, self.exit)
 
-                options = [
-                    "Re-generate a new maze",
-                    "Show/Hide path from entry to exit",
-                    "Rotate maze colors",
-                    "Quit"
-                ]
-                print(f"\n{P}==={NC} {P}A-Maze-ing{NC} {P}==={NC}")
-                for i, opt in enumerate(options, start=1):
-                    print(f"{i}. {opt}")
+                print()
+                print("   ╔════════════════════════════════╗")
+                print(f"   ║           \33[3m{P}A-Maze-ing{NC}           ║")
+                print("   ║   1. Re-generate a new maze    ║")
+                print("   ║   2. Show/Hide path            ║")
+                print("   ║   3. Rotate maze colors        ║")
+                print("   ║   4. Quit                      ║")
+                print("   ╚════════════════════════════════╝")
 
-                match int(input("Choice? (1-4): ")):
+                match int(input("\n     Choice? (1-4): ")):
                     case 1:
                         self.maze = self._generate()
                     case 2:
@@ -63,6 +64,18 @@ class MazeGenerator:
 
     def switch_rotate_colors(self) -> None:
         self.rotate_colors = not self.rotate_colors
+        if self.rotate_colors:
+            self._pick_new_colors()
+        else:
+            self.current_colors = None
+
+    def _pick_new_colors(self) -> None:
+        colors = [GREEN_BACK, PURPLE_BACK, RED_BACK, YELLOW_BACK]
+        walls = choice(colors)
+        c42 = choice(colors)
+        while c42 == walls:
+            c42 = choice(colors)
+        self.current_colors = (walls, c42)
 
     def _generate(self) -> Maze:
         maze = Maze(self.width, self.height, self.seed)
@@ -88,43 +101,6 @@ class MazeGenerator:
         if not entry_cell.cell42 or exit_cell.cell42:
             return True
         return False
-
-    def _carve_passages_and_solve_recursive(self, maze: Maze,
-                                            x: int, y: int, exit_x: int,
-                                            exit_y: int) -> bool:
-        current = maze.grid[y][x]
-        current.visited = True
-
-        found_exit = (x == exit_x and y == exit_y)
-
-        moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
-        shuffle(moves)
-
-        for dx, dy in moves:
-            nx, ny = x + dx, y + dy
-
-            if not maze.in_bounds(nx, ny):
-                continue
-
-            neighbor = maze.grid[ny][nx]
-
-            if neighbor.visited or neighbor.cell42:
-                continue
-
-            direction = Cell.convert_direction((dx, dy))
-            opposite = Cell.convert_direction((-dx, -dy))
-
-            current.walls &= ~direction
-            neighbor.walls &= ~opposite
-
-            if self._carve_passages(maze, nx, ny, exit_x, exit_y):
-                maze.path.append((dx, dy))
-                found_exit = True
-
-        if found_exit:
-            current.in_path = True
-
-        return found_exit
 
     def _break_random_walls(self, maze: Maze) -> None:
         for y, row in enumerate(maze.grid):
@@ -153,7 +129,7 @@ class MazeGenerator:
                                   start_y: int,
                                   exit_x: int,
                                   exit_y: int) -> bool:
-        
+
         stack = []
 
         start = maze.grid[start_y][start_x]

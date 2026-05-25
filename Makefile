@@ -1,15 +1,15 @@
-P3= python3
-VENV= venv
-ACTIVATE= . $(VENV)/bin/activate
+P3 = python3
+VENV = venv
+ACTIVATE = . $(VENV)/bin/activate
 
-MAIN= a_maze_ing.py
-CONFIG= config.txt
+MAIN = a_maze_ing.py
+CONFIG = config.txt
 
-PIP= $(VENV)/bin/pip
-PYTHON= $(VENV)/bin/python3
-FLAKE8= $(VENV)/bin/flake8
-MYPY= $(VENV)/bin/mypy
-RM= rm -rf
+PIP = $(VENV)/bin/pip
+PYTHON = $(VENV)/bin/python3
+FLAKE8 = $(VENV)/bin/flake8
+MYPY = $(VENV)/bin/mypy
+RM = rm -rf
 
 all: run
 

@@ -6,7 +6,8 @@ class MazeSolver:
     def __init__(self, maze: Maze) -> None:
         self.maze = maze
 
-    def solve(self, entry: tuple[int, int], exit: tuple[int, int]) -> list[tuple[int, int]]:
+    def solve(self, entry: tuple[int, int],
+              exit: tuple[int, int]) -> list[tuple[int, int]]:
 
         queue = deque([entry])
 
@@ -67,7 +68,7 @@ class MazeSolver:
 
             dx = nx - px
             dy = ny - py
-    
+
             moves.append((dx, dy))
             path.append(node)
 

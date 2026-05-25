@@ -1,8 +1,7 @@
 from typing import Optional
-from random import choice
 from .Maze import Maze
-from .Utils import WHITE_BACK, PURPLE_BACK, RED_BACK, PURPLE_42 as P42, \
-                    GREEN_BACK, YELLOW_BACK, ENTRY, EXIT, PURPLE_BLINK, \
+from .Utils import WHITE_BACK, RED_BACK, PURPLE_42 as P42, \
+                    GREEN_BACK, ENTRY, EXIT, PURPLE_BLINK, \
                     YELLOW_BLINK, GREEN, NC
 
 
@@ -14,9 +13,9 @@ class MazeRenderer:
 
     def render(self, entry: tuple, exit: tuple,
                show_path: Optional[bool] = False,
-               rotate_colors: Optional[bool] = False) -> None:
+               rotate_colors: Optional[bool] = False,
+               current_colors: Optional[tuple] = None) -> None:
 
-        colors = [GREEN_BACK, PURPLE_BACK, RED_BACK, YELLOW_BACK]
         walls_colors = WHITE_BACK
         entry_color = ENTRY
         exit_color = EXIT
@@ -24,15 +23,12 @@ class MazeRenderer:
         ex, ey = entry
         ty, tx = exit
 
-        if rotate_colors:
-            walls_colors = choice(colors)
-            c42_color = choice(colors)
-            while c42_color == walls_colors:
-                c42_color = choice(colors)
-            if walls_colors == GREEN_BACK:
-                entry_color = PURPLE_BLINK
-            if walls_colors == RED_BACK:
-                exit_color = YELLOW_BLINK
+        if rotate_colors and current_colors is not None:
+            walls_colors, c42_color = current_colors
+        if walls_colors == GREEN_BACK:
+            entry_color = PURPLE_BLINK
+        if walls_colors == RED_BACK:
+            exit_color = YELLOW_BLINK
 
         for x, row in enumerate(self.maze.grid):  # Print all the lines
             for cell in row:  # Prints the upper wall of the cell

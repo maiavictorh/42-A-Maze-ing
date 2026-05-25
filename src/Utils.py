@@ -4,7 +4,7 @@ from typing import Any
 
 RED = "\033[31m"
 GREEN = "\033[92m"
-YELLOW = "\33[1;93m"
+YELLOW = "\33[93m"
 PURPLE = "\33[1;35m"
 PURPLE_42 = "\33[48;2;95;0;151m"
 

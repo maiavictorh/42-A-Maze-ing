@@ -1,9 +1,9 @@
 from sys import exit
 from typing import Any
-from random import randint, shuffle, choice
 from .Maze import Cell, Maze
 from .MazeSolver import MazeSolver
 from .MazeRenderer import MazeRenderer
+from random import randint, shuffle, choice
 from .Utils import (MazeError, CLEAR, NC, PURPLE as P, YELLOW, GREEN_BACK,
                     PURPLE_BACK, RED_BACK, YELLOW_BACK)
 

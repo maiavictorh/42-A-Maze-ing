@@ -40,9 +40,13 @@ class MazeGenerator:
 
                 print()
                 if self.width > 127:
-                    print(YELLOW, "Warning: Maze visualization (ASCII) must be"
-                          " compromised due to its dimensions!"
+                    print(YELLOW, "Warning: Maze visualization (ASCII) is"
+                          " compromised due to it's dimensions!"
                           " Max width recommended: 127", NC)
+                if self.width < 9 or self.height < 9:
+                    print(YELLOW, "Warning: 42 Pattern visualization is "
+                          "compromised due to Maze's dimensions!"
+                          " Min recommended: 9x9", NC)
                 print()
                 print("   ╔════════════════════════════════╗")
                 print(f"   ║           \33[3m{P}A-Maze-ing{NC}           ║")
@@ -87,7 +91,7 @@ class MazeGenerator:
     def _generate(self) -> Maze:
         maze = Maze(self.width, self.height, self.seed)
 
-        if not self._inside_42_cell(maze):
+        if self._inside_42_cell(maze):
             raise MazeError("Entry/Exit cannot be inside 42 pattern")
 
         x, y = self.entry
@@ -105,9 +109,7 @@ class MazeGenerator:
         exit_x, exit_y = self.exit
         entry_cell = maze.get_cell(entry_x, entry_y)
         exit_cell = maze.get_cell(exit_x, exit_y)
-        if not entry_cell.cell42 or exit_cell.cell42:
-            return True
-        return False
+        return (entry_cell.cell42 or exit_cell.cell42)
 
     def _break_random_walls(self, maze: Maze) -> None:
         for y, row in enumerate(maze.grid):

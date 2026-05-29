@@ -20,7 +20,7 @@ class MazeRenderer:
         entry_color = ENTRY
         exit_color = EXIT
         c42_color = P42
-        ex, ey = entry
+        ey, ex = entry
         ty, tx = exit
 
         if rotate_colors and current_colors is not None:

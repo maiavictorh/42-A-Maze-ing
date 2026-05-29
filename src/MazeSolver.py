@@ -70,7 +70,6 @@ class MazeSolver:
             dy = ny - py
 
             moves.append((dx, dy))
-            path.append(node)
 
             node = parent[node]
 

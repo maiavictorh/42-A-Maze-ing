@@ -26,7 +26,7 @@ def parser(args: list[str]) -> dict[str, Any]:
                 raise ValueError("Invalid format")
 
             key, value = line.split("=", 1)
-            key = key.strip()
+            key = key.strip().upper()
             value = value.strip()
             if key not in validators:
                 raise KeyError(f"Unknown key: {key}")

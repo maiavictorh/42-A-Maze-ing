@@ -1,15 +1,13 @@
 P3 = python3
 VENV = venv
-ACTIVATE = . $(VENV)/bin/activate
-
-MAIN = a_maze_ing.py
-CONFIG = config.txt
-
 PIP = $(VENV)/bin/pip
-PYTHON = $(VENV)/bin/python3
+P3_VENV = $(VENV)/bin/python3
 FLAKE8 = $(VENV)/bin/flake8
 MYPY = $(VENV)/bin/mypy
 RM = rm -rf
+
+MAIN = a_maze_ing.py
+CONFIG = config.txt
 
 all: run
 
@@ -20,10 +18,10 @@ install:
 	@echo "Virtual environment created successfully."
 
 run:
-	$(PYTHON) $(MAIN) $(CONFIG)
+	$(P3_VENV) $(MAIN) $(CONFIG)
 
 debug:
-	$(PYTHON) -m pdb $(MAIN) $(CONFIG)
+	$(P3_VENV) -m pdb $(MAIN) $(CONFIG)
 
 clean:
 	$(RM) .mypy_cache
@@ -42,9 +40,7 @@ lint:
 		--check-untyped-defs
 
 lint-strict:
-	$(FLAKE8) .
+	$(FLAKE8) . --exclude $(VENV)
 	$(MYPY) . --strict
-
-re: clean run
 
 .PHONY: all install run debug clean lint lint-strict re

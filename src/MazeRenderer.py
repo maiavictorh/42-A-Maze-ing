@@ -11,10 +11,10 @@ class MazeRenderer:
 
     # RENDERER - Prints on terminal the representation of the maze.
 
-    def render(self, entry: tuple, exit: tuple,
+    def render(self, entry: tuple[int, int], exit: tuple[int, int],
                show_path: Optional[bool] = False,
                rotate_colors: Optional[bool] = False,
-               current_colors: Optional[tuple] = None) -> None:
+               current_colors: Optional[tuple[str, str]] = None) -> None:
 
         walls_colors = WHITE_BACK
         entry_color = ENTRY
@@ -44,7 +44,7 @@ class MazeRenderer:
                 inside_cell = "   "
 
                 if show_path and cell.in_path:
-                    inside_cell = f" {GREEN}\33[1m+ "
+                    inside_cell = f" {GREEN}• "
 
                 if is_entry or is_exit:
                     door = entry_color if is_entry else exit_color
@@ -104,7 +104,7 @@ class MazeRenderer:
     # EXPORTER - Writes the maze in hexadecimal in a file.
 
     def export(self, output_name: str,
-               entry: tuple, exit: tuple) -> None:
+               entry: tuple[int, int], exit: tuple[int, int]) -> None:
         dirs = {
             (0, -1): "N",
             (1, 0): "E",

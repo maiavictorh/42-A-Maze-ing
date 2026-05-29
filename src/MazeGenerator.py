@@ -5,7 +5,8 @@ from .MazeSolver import MazeSolver
 from .MazeRenderer import MazeRenderer
 from random import randint, shuffle, choice
 from .Utils import (MazeError, CLEAR, NC, PURPLE as P, YELLOW, GREEN_BACK,
-                    PURPLE_BACK, RED_BACK, YELLOW_BACK)
+                    PURPLE_BACK, RED_BACK, YELLOW_BACK, GRAY_BACK, BLUE_BACK,
+                    OCEAN)
 
 
 class MazeGenerator:
@@ -37,6 +38,11 @@ class MazeGenerator:
                                 self.current_colors)
                 renderer.export(self.output_file, self.entry, self.exit)
 
+                print()
+                if self.width > 127:
+                    print(YELLOW, "Warning: Maze visualization (ASCII) must be"
+                          " compromised due to its dimensions!"
+                          " Max width recommended: 127", NC)
                 print()
                 print("   ╔════════════════════════════════╗")
                 print(f"   ║           \33[3m{P}A-Maze-ing{NC}           ║")
@@ -70,7 +76,8 @@ class MazeGenerator:
             self.current_colors = None
 
     def _pick_new_colors(self) -> None:
-        colors = [GREEN_BACK, PURPLE_BACK, RED_BACK, YELLOW_BACK]
+        colors = [GREEN_BACK, PURPLE_BACK, RED_BACK,
+                  YELLOW_BACK, GRAY_BACK, BLUE_BACK, OCEAN]
         walls = choice(colors)
         c42 = choice(colors)
         while c42 == walls:

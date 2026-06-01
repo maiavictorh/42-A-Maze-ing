@@ -28,14 +28,22 @@ CLEAR = "\033c"
 
 
 class MazeError(Exception):
+    """Custom Exception for maze related errors"""
     pass
 
 
 class CoordinateError(MazeError):
+    """Custom Exception for coordinate related errors"""
     pass
 
 
 class Processor(ABC):
+    """
+    Abstract base class for configuration value processors.
+
+    Subclasses must implement the 'converter' method to parse
+    and validate a raw string value from the configuration file.
+    """
     @abstractmethod
     def converter(self, value: str) -> Any:
         pass

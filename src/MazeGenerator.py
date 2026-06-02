@@ -10,7 +10,37 @@ from .Utils import (MazeError, CLEAR, NC, PURPLE as P, YELLOW, GREEN_BACK,
 
 
 class MazeGenerator:
+    """
+    Orchestrates maze generation, solving, rendering, and export.
+
+    Reads a validated configuration, generates a random maze using an
+    iterative DFS algorithm, solves it with BFS, renders it to the
+    terminal, and exports it to a file. Provides an interactive menu
+    for re-generation and display options.
+
+    Attributes:
+        width (int): Maze width in cells.
+        height (int): Maze height in cells.
+        entry (tuple[int, int]): Entry cell coordinates (x, y).
+        exit (tuple[int, int]): Exit cell coordinates (x, y).
+        output_file (str): Path to the hexadecimal output file.
+        perfect (bool): Whether the maze has a single solution path.
+        seed (int): Random seed used for maze generation.
+        show_path (bool): Whether the solution path is currently visible.
+        rotate_colors (bool): Whether custom wall colors are active.
+        current_colors (tuple[str, str] | None): Active (walls, 42)
+            ANSI color pair, or None when rotation is off.
+        maze (Maze): The currently generated maze instance.
+    """
     def __init__(self, config: dict[str, Any]) -> None:
+        """
+        Initialize the generator from a validated configuration dict.
+
+        Args:
+            config: Dictionary produced by parser(). Must contain
+                "WIDTH", "HEIGHT", "ENTRY", "EXIT",
+                "OUTPUT_FILE", and "PERFECT".
+        """
         self.width = config["WIDTH"]
         self.height = config["HEIGHT"]
         self.entry = config["ENTRY"]
@@ -24,6 +54,23 @@ class MazeGenerator:
         self.maze = self._generate()
 
     def run(self) -> None:
+        """
+        Start the interactive maze loop.
+
+        Clears the terminal, renders the current maze, exports it to
+        the output file, and presents a menu. Loops until the user
+        chooses to quit.
+
+        Menu options:
+
+        - 1 — Re-generate a new maze.
+        - 2 — Toggle the solution path display.
+        - 3 — Toggle custom wall color rotation.
+        - 4 — Quit the program.
+
+        Raises:
+            Exception: Propagates any unexpected error with context.
+        """
         try:
             while True:
                 print(CLEAR, end="")
@@ -70,9 +117,17 @@ class MazeGenerator:
             raise Exception(f"MazeGenerator: run {err}")
 
     def switch_show_path(self) -> None:
+        """Toggle the visibility of the solution path."""
         self.show_path = not self.show_path
 
     def switch_rotate_colors(self) -> None:
+        """
+        Toggle custom wall color rotation.
+
+        When enabled, picks a new random color pair via
+        _pick_new_colors. When disabled, resets
+        current_colors to None.
+        """
         self.rotate_colors = not self.rotate_colors
         if self.rotate_colors:
             self._pick_new_colors()
@@ -80,6 +135,12 @@ class MazeGenerator:
             self.current_colors = None
 
     def _pick_new_colors(self) -> None:
+        """
+        Select a random pair of distinct ANSI colors for the maze walls.
+
+        Picks two different colors from the available palette and stores
+        them in current_colors as a (walls_color, 42_color) tuple.
+        """
         colors = [GREEN_BACK, PURPLE_BACK, RED_BACK,
                   YELLOW_BACK, GRAY_BACK, BLUE_BACK, OCEAN]
         walls = choice(colors)
@@ -89,6 +150,19 @@ class MazeGenerator:
         self.current_colors = (walls, c42)
 
     def _generate(self) -> Maze:
+        """
+        Generate and return a new maze.
+
+        Creates a fresh Maze, validates that neither entry nor exit
+        falls inside the "42" pattern, carves passages with the iterative
+        DFS algorithm, and optionally breaks random walls for imperfect
+        mazes (two passes when self.perfect is False).
+
+        Returns:
+            A fully generated Maze instance.
+        Raises:
+            MazeError: If entry or exit is positioned inside a "42" cell.
+        """
         maze = Maze(self.width, self.height, self.seed)
 
         if self._inside_42_cell(maze):
@@ -105,6 +179,15 @@ class MazeGenerator:
         return maze
 
     def _inside_42_cell(self, maze: Maze) -> bool:
+        """
+        Check whether entry or exit overlaps with the "42" pattern.
+
+        Args:
+            maze: The maze whose grid is inspected.
+        Returns:
+            True if either the entry or exit cell has cell42 set,
+            False otherwise.
+        """
         entry_x, entry_y = self.entry
         exit_x, exit_y = self.exit
         entry_cell = maze.get_cell(entry_x, entry_y)
@@ -112,6 +195,18 @@ class MazeGenerator:
         return (entry_cell.cell42 or exit_cell.cell42)
 
     def _break_random_walls(self, maze: Maze) -> None:
+        """
+        Remove one random north wall per row to create maze loops.
+
+        For each row, collects all eligible interior cells — those not
+        part of the "42" pattern, not on the border, and whose northern
+        neighbor is also not part of "42" — then randomly opens the north
+        wall of one such cell (and the corresponding south wall of its
+        neighbor above), introducing a loop into the maze.
+
+        Args:
+            maze: The maze to modify in place.
+        """
         for y, row in enumerate(maze.grid):
             valid_cells: list[tuple[int, Cell]] = []
 
@@ -138,6 +233,30 @@ class MazeGenerator:
                                   start_y: int,
                                   exit_x: int,
                                   exit_y: int) -> bool:
+        """
+        Carve maze passages using an iterative DFS with backtracking.
+
+        Starting from (start_x, start_y), explores the grid by
+        randomly shuffling available directions at each step and carving
+        walls between the current cell and unvisited, non "42" neighbors.
+        Uses an explicit stack to avoid Python's recursion limit.
+
+        Each stack frame stores (x, y, moves, i), where moves is
+        the shuffled direction list and 'i' is the index of the next
+        direction to try. When all directions are exhausted, the frame is
+        popped (backtrack). The exit cell is detected mid-traversal via
+        coordinate comparison.
+
+        Args:
+            maze: The maze whose walls will be carved in place.
+            start_x: Horizontal coordinate of the starting cell.
+            start_y: Vertical coordinate of the starting cell.
+            exit_x: Horizontal coordinate of the exit cell.
+            exit_y: Vertical coordinate of the exit cell.
+        Returns:
+            True if the exit cell was reached during carving,
+            False otherwise.
+        """
 
         stack = []
 

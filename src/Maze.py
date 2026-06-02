@@ -29,7 +29,6 @@ class Cell:
             walls &= ~N
 
         Result:
-
             1110 -> 14 (decimal) -> E (hexadecimal)
 
     Attributes:
@@ -39,7 +38,6 @@ class Cell:
         in_path (bool): Indicates whether the cell belongs to the solution
         path.
     """
-
     N, E, S, W = 1, 2, 4, 8
 
     def __init__(self) -> None:
@@ -56,7 +54,6 @@ class Cell:
             str: Hexadecimal character corresponding to the current
             wall configuration.
         """
-
         return "0123456789ABCDEF"[self.walls]
 
     @staticmethod
@@ -74,15 +71,12 @@ class Cell:
                 - ``(1, 0)`` -> East
                 - ``(0, 1)`` -> South
                 - ``(-1, 0)`` -> West
-
         Raises:
             ValueError: If the coordinate does not represent
                 a valid direction.
-
         Returns:
             int: Direction constant defined by ``Cell``.
         """
-
         if coordinate == (0, -1):
             return Cell.N
         if coordinate == (1, 0):
@@ -124,11 +118,9 @@ class Maze:
         Args:
             x (int): Horizontal coordinate.
             y (int): Vertical coordinate.
-
         Returs:
             bool: "True" if the coordinate is valid, otherwise "False".
         """
-
         return 0 <= x < self.width and 0 <= y < self.height
 
     def get_cell(self, x: int, y: int) -> Cell:
@@ -138,14 +130,11 @@ class Maze:
         Args:
             x (int): Horizontal cell coordinate.
             y (int): Vertical cell coordinate.
-
         Raises:
             CoordinateError: If the coordinate is outside maze boundaries.
-
         Returns:
             Cell: The Cell object located  at the given position.
         """
-
         if not self.in_bounds(x, y):
             raise CoordinateError("Couldn't reach Cell: Out of bounds")
         return self.grid[y][x]
@@ -160,7 +149,6 @@ class Maze:
         Args:
             x (int): Horizontal cell coordinate.
             y (int): Vertical cell coordinate.
-
         Returns:
             list[tuple[int, int, int]]:
                 A list of tuples in the format
@@ -169,7 +157,6 @@ class Maze:
                 - nx is the horizontal coordinate.
                 - ny is the vertical coordinate:
         """
-
         neighbors: list[tuple[int, int, int]] = []
 
         dirs = {
@@ -199,7 +186,6 @@ class Maze:
         Returns:
             list[list[Cell]]: Matrix containing all created cells.
         """
-
         grid = [[Cell() for _ in range(self.width)]
                 for _ in range(self.height)]
 

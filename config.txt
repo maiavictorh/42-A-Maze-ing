@@ -1,6 +1,8 @@
-width=4
-height=4
-ENTRY=0,0
-exit=3,3
+width=20
+height=20
+ENTRY=0,1
+exit=19,17
 output_file=maze.txt
 perfect=false
+
+# comments are permitted

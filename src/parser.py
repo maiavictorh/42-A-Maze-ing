@@ -5,6 +5,42 @@ from .Utils import Processor, NumericProcessor, CoordinateProcessor, \
 
 
 def parser(args: list[str]) -> dict[str, Any]:
+    """
+    Parse and validate a maze configuration file.
+
+    Reads a plain-text configuration file whose path is given as the
+    second element of args. Each non-comment, non-empty line must
+    follow the KEY=VALUE format. All six mandatory keys must be
+    present exactly once, and their values must pass type and semantic
+    validation before the config is returned.
+
+    The following keys are mandatory:
+
+    - WIDTH        — maze width in cells (integer ≥ 3).
+    - HEIGHT       — maze height in cells (integer ≥ 3).
+    - ENTRY        — entry coordinates as x,y (inside bounds).
+    - EXIT         — exit coordinates as x,y (inside bounds, ≠ ENTRY).
+    - OUTPUT_FILE  — output filename (must end in '.txt').
+    - PERFECT      — whether the maze is perfect (True or False).
+
+    Args:
+        args: Command-line argument list. args[1] must be the path
+            to the configuration file.
+    Returns:
+        A dictionary mapping each validated key to its converted value:
+        "WIDTH" and "HEIGHT" as 'int', "ENTRY" and "EXIT" as
+        'tuple[int, int]', "OUTPUT_FILE" as 'str', and "PERFECT"
+        as 'bool'.
+    Raises:
+        FileNotFoundError: If the configuration file does not exist.
+        ValueError: If a line is not in 'KEY=VALUE' format, the output
+            file does not end in '.txt', or a value fails type conversion.
+        KeyError: If an unknown key is found, a key appears more than once,
+            or a mandatory key is missing.
+        CoordinateError: If "ENTRY" equals "EXIT", or either coordinate
+            falls outside the maze bounds.
+        MazeError: If "WIDTH" or "HEIGHT" is less than 3.
+    """
     validators: dict[str, Processor] = {
             "WIDTH": NumericProcessor(),
             "HEIGHT": NumericProcessor(),

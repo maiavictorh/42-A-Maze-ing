@@ -15,7 +15,6 @@ install:
 	$(P3) -m venv $(VENV)
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
-	@echo "Virtual environment created successfully."
 
 run:
 	$(P3_VENV) $(MAIN) $(CONFIG)
@@ -28,7 +27,6 @@ clean:
 	$(RM) .pytest_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
-	$(RM) $(VENV)
 
 lint:
 	$(FLAKE8) . --exclude $(VENV)

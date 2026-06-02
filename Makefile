@@ -16,6 +16,9 @@ install:
 	$(PIP) install --upgrade pip
 	$(PIP) install -r requirements.txt
 
+build:
+	$(P3_VENV) -m build
+
 run:
 	$(P3_VENV) $(MAIN) $(CONFIG)
 

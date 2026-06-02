@@ -1,6 +1,6 @@
 import sys
-from src import parser, MazeGenerator
-from src.Utils import MazeError, CoordinateError, RED, EXIT, NC
+from mazegen import parser, MazeGenerator
+from mazegen.Utils import MazeError, CoordinateError, RED, EXIT, NC
 
 
 def main() -> None:

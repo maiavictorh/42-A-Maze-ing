@@ -170,7 +170,7 @@ class MazeGenerator:
 
         x, y = self.entry
         exit_x, exit_y = self.exit
-        self._carve_passages_iterative(maze, x, y, exit_x, exit_y)
+        self._carve_passages_iterative(maze, x, y)
 
         if not self.perfect:
             self._break_random_walls(maze)
@@ -230,9 +230,7 @@ class MazeGenerator:
     def _carve_passages_iterative(self,
                                   maze: Maze,
                                   start_x: int,
-                                  start_y: int,
-                                  exit_x: int,
-                                  exit_y: int) -> bool:
+                                  start_y: int) -> None:
         """
         Carve maze passages using an iterative DFS with backtracking.
 
@@ -244,46 +242,29 @@ class MazeGenerator:
         Each stack frame stores (x, y, moves, i), where moves is
         the shuffled direction list and 'i' is the index of the next
         direction to try. When all directions are exhausted, the frame is
-        popped (backtrack). The exit cell is detected mid-traversal via
-        coordinate comparison.
+        popped (backtrack).
 
         Args:
             maze: The maze whose walls will be carved in place.
             start_x: Horizontal coordinate of the starting cell.
             start_y: Vertical coordinate of the starting cell.
-            exit_x: Horizontal coordinate of the exit cell.
-            exit_y: Vertical coordinate of the exit cell.
-        Returns:
-            True if the exit cell was reached during carving,
-            False otherwise.
         """
 
         stack = []
 
-        start = maze.grid[start_y][start_x]
-        start.visited = True
+        maze.grid[start_y][start_x].visited = True
 
         moves = [(-1, 0), (0, 1), (1, 0), (0, -1)]
         shuffle(moves)
 
         stack.append((start_x, start_y, moves, 0))
 
-        found_exit = False
-
         while stack:
             x, y, moves, i = stack[-1]
             current: Cell = maze.grid[y][x]
 
-            if x == exit_x and y == exit_y:
-                found_exit = True
-
             if i >= len(moves):
-
                 stack.pop()
-
-                if stack and found_exit:
-                    px, py, _, _ = stack[-1]
-
                 continue
 
             stack[-1] = (x, y, moves, i + 1)
@@ -311,5 +292,3 @@ class MazeGenerator:
             shuffle(next_moves)
 
             stack.append((nx, ny, next_moves, 0))
-
-        return found_exit

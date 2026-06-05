@@ -170,6 +170,7 @@ config = {
 }
 
 gen = MazeGenerator(config)
+gen.run()
 ```
 
 ### Accessing the Generated Structure

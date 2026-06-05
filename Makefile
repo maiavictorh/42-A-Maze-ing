@@ -18,6 +18,7 @@ install:
 
 build:
 	$(P3_VENV) -m build
+	mv dist/mazegen-1.0.0-py3-none-any.whl .
 
 run:
 	$(P3_VENV) $(MAIN) $(CONFIG)
@@ -30,6 +31,11 @@ clean:
 	$(RM) .pytest_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
+
+fclean: clean
+	$(RM) dist mazegen.egg-info
+	$(RM) mazegen-1.0.0-py3-none-any.whl
+	$(RM) $(VENV)
 
 lint:
 	$(FLAKE8) . --exclude $(VENV)

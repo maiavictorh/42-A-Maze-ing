@@ -249,7 +249,7 @@ The terminal renderer draws the maze using ANSI escape codes and block character
 
 ### What Could Be Improved
 
-*(E.g., adding a proper seed parameter to the config, supporting MLX rendering, multiple generation algorithms.)*
+Adding a proper seed parameter to the config, supporting MLX rendering, multiple generation algorithms.
 
 ### Tools Used
 

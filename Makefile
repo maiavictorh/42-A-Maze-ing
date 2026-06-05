@@ -37,6 +37,8 @@ fclean: clean
 	$(RM) mazegen-1.0.0-py3-none-any.whl
 	$(RM) $(VENV)
 
+re: fclean install run
+
 lint:
 	$(FLAKE8) . --exclude $(VENV)
 	$(MYPY) . \
@@ -50,4 +52,4 @@ lint-strict:
 	$(FLAKE8) . --exclude $(VENV)
 	$(MYPY) . --strict
 
-.PHONY: all install run debug clean lint lint-strict re
+.PHONY: all install build run debug clean fclean re lint lint-strict
